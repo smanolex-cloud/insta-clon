@@ -4,16 +4,15 @@ const Notification = require("../models/Notification");
 // 1. OBTENER MIS NOTIFICACIONES
 router.get("/:userId", async (req, res) => {
   try {
-    // Buscamos las notificaciones para mí, ordenadas por la más nueva
     const notifications = await Notification.find({ recipientId: req.params.userId })
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 }); // Las más nuevas primero
     res.status(200).json(notifications);
   } catch (err) {
     res.status(500).json(err);
   }
 });
 
-// 2. MARCAR COMO LEÍDAS (Limpiar el contador)
+// 2. MARCAR TODAS COMO LEÍDAS
 router.put("/read/:userId", async (req, res) => {
   try {
     await Notification.updateMany(
