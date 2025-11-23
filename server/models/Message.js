@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
 
 const MessageSchema = new mongoose.Schema({
-  senderId: { type: String, required: true },   // El que envía
-  receiverId: { type: String, required: true }, // El que recibe
-  text: { type: String, required: true },       // El mensaje
+  senderId: { type: String, required: true },
+  receiverId: { type: String, required: true },
+  text: { type: String, default: "" },
+  storyImg: { type: String, default: "" }, // <--- CAMPO NUEVO
 }, { timestamps: true });
 
 module.exports = mongoose.model("Message", MessageSchema);
