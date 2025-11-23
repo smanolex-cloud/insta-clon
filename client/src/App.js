@@ -5,9 +5,11 @@ import Register from "./Register";
 import Home from "./Home";
 import Chat from "./Chat";
 import Profile from "./Profile";
+import TagResults from "./TagResults"; // <--- NUEVO IMPORT
 
 function App() {
   const user = localStorage.getItem("user");
+
   return (
     <Router>
       <Routes>
@@ -16,8 +18,12 @@ function App() {
         <Route path="/register" element={user ? <Navigate to="/" /> : <Register />} />
         <Route path="/chat" element={user ? <Chat /> : <Navigate to="/login" />} />
         <Route path="/profile/:username" element={user ? <Profile /> : <Navigate to="/login" />} />
+        
+        {/* NUEVA RUTA */}
+        <Route path="/tag/:tag" element={user ? <TagResults /> : <Navigate to="/login" />} />
       </Routes>
     </Router>
   );
 }
+
 export default App;

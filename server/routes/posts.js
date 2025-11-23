@@ -12,7 +12,7 @@ router.post("/", async (req, res) => {
   } catch (err) { res.status(500).json(err); }
 });
 
-// OBTENER TODOS
+// OBTENER TIMELINE (FEED)
 router.get("/timeline/all", async (req, res) => {
   try {
     const posts = await Post.find().sort({ createdAt: -1 });
@@ -20,7 +20,7 @@ router.get("/timeline/all", async (req, res) => {
   } catch (err) { res.status(500).json(err); }
 });
 
-// OBTENER PERFIL
+// OBTENER PERFIL DE USUARIO
 router.get("/profile/:username", async (req, res) => {
   try {
     const posts = await Post.find({ username: req.params.username }).sort({ createdAt: -1 });
@@ -28,7 +28,17 @@ router.get("/profile/:username", async (req, res) => {
   } catch (err) { res.status(500).json(err); }
 });
 
-// BORRAR
+// 7. BUSCAR POR HASHTAG (NUEVO)
+router.get("/tag/:tag", async (req, res) => {
+  try {
+    const tag = "#" + req.params.tag;
+    // Buscamos descripciones que contengan el tag (i = ignora mayúsculas)
+    const posts = await Post.find({ desc: { $regex: tag, $options: "i" } }).sort({ createdAt: -1 });
+    res.status(200).json(posts);
+  } catch (err) { res.status(500).json(err); }
+});
+
+// BORRAR POST
 router.delete("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -39,14 +49,13 @@ router.delete("/:id", async (req, res) => {
   } catch (err) { res.status(500).json(err); }
 });
 
-// LIKE
+// DAR LIKE
 router.put("/:id/like", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     if (!post.likes.includes(req.body.userId)) {
       await post.updateOne({ $push: { likes: req.body.userId } });
       
-      // Notificación
       if (post.userId !== req.body.userId) {
         const sender = await User.findById(req.body.userId);
         const newNoti = new Notification({
@@ -73,7 +82,6 @@ router.put("/:id/comment", async (req, res) => {
     const comment = { username: req.body.username, text: req.body.text, userId: req.body.userId, createdAt: new Date() };
     await post.updateOne({ $push: { comments: comment } });
 
-    // Notificación
     if (post.userId !== req.body.userId) {
         const newNoti = new Notification({
           recipientId: post.userId,
