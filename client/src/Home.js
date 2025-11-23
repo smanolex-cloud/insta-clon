@@ -15,7 +15,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
-  // Obtenemos el usuario y aseguramos que tenga la lista de followings
+  // Aseguramos que el usuario tenga la lista de seguidos
   const user = JSON.parse(localStorage.getItem("user"));
   if (!user.followings) user.followings = [];
 
@@ -45,7 +45,7 @@ export default function Home() {
     }
   };
 
-  // CAMBIAR FOTO
+  // CAMBIAR FOTO DE PERFIL
   const changeProfilePic = async () => {
     const url = prompt("Pega el URL de tu nueva foto de perfil:");
     if (!url) return;
@@ -60,24 +60,16 @@ export default function Home() {
     } catch (err) { alert("Error al actualizar foto"); }
   };
 
-  // --- AQUÍ ESTÁ EL ARREGLO ---
   const handleFollow = async (userIdToFollow) => {
     try {
-      // 1. Avisar al servidor
       await axios.put(`${API_URL}/users/${userIdToFollow}/follow`, { userId: user._id });
-      
-      // 2. Actualizar la memoria LOCAL del navegador para que el Chat se entere
       if (!user.followings.includes(userIdToFollow)) {
         user.followings.push(userIdToFollow);
         localStorage.setItem("user", JSON.stringify(user));
       }
-      
-      alert("¡Siguiendo! 🤝 Ahora aparecerá en tu chat.");
+      alert("¡Siguiendo! 🤝");
       window.location.reload();
-    } catch (err) { 
-      console.error(err);
-      alert("Ya sigues a este usuario o hubo un error."); 
-    }
+    } catch (err) { alert("Ya sigues a este usuario."); }
   };
 
   const handleSubmit = async (e) => {
@@ -104,10 +96,11 @@ export default function Home() {
       <div className="navbar">
         <h2>InstaClon</h2>
         
+        {/* BARRA DE BÚSQUEDA */}
         <div className="search-bar-container" style={{position: "relative"}}>
           <input 
             type="text" 
-            placeholder="🔍 Buscar..." 
+            placeholder="🔍 Buscar usuarios..." 
             className="search-input-nav"
             value={searchQuery}
             onChange={handleSearch}
@@ -116,7 +109,17 @@ export default function Home() {
             <div className="search-results">
               {searchResults.map(u => (
                 <div key={u._id} className="search-item">
-                  <span>{u.username}</span>
+                  {/* --- AQUÍ ESTÁ EL CAMBIO CLAVE --- */}
+                  {/* Al hacer clic en el nombre, te lleva al perfil */}
+                  <span 
+                    onClick={() => window.location.href=`/profile/${u.username}`}
+                    style={{ cursor: "pointer", fontWeight: "bold" }}
+                    title="Ver perfil"
+                  >
+                    {u.username}
+                  </span>
+                  
+                  {/* Botón de seguir (solo si no soy yo) */}
                   {u._id !== user._id && (
                     <button className="mini-follow-btn" onClick={() => handleFollow(u._id)}>Seguir</button>
                   )}
@@ -161,7 +164,13 @@ export default function Home() {
           <ul className="user-list">
             {users.map((u) => (
               <li key={u._id} className="user-item">
-                <span style={{fontWeight: "bold"}}>{u.username}</span>
+                {/* También hacemos clicable el nombre en la lista de sugerencias */}
+                <span 
+                  style={{fontWeight: "bold", cursor: "pointer"}}
+                  onClick={() => window.location.href=`/profile/${u.username}`}
+                >
+                  {u.username}
+                </span>
                 <button className="follow-btn" onClick={() => handleFollow(u._id)}>Seguir</button>
               </li>
             ))}
