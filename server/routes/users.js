@@ -2,7 +2,7 @@ const router = require("express").Router();
 const User = require("../models/User");
 const Notification = require("../models/Notification");
 
-// SEGUIR
+// 1. SEGUIR
 router.put("/:id/follow", async (req, res) => {
   if (req.body.userId !== req.params.id) {
     try {
@@ -16,10 +16,10 @@ router.put("/:id/follow", async (req, res) => {
         res.status(200).json("Seguido");
       } else { res.status(403).json("Ya seguido"); }
     } catch (err) { res.status(500).json(err); }
-  } else { res.status(403).json("Error propio"); }
+  } else { res.status(403).json("Error"); }
 });
 
-// UNFOLLOW
+// 2. DEJAR DE SEGUIR
 router.put("/:id/unfollow", async (req, res) => {
     if (req.body.userId !== req.params.id) {
       try {
@@ -34,22 +34,28 @@ router.put("/:id/unfollow", async (req, res) => {
     } else { res.status(403).json("Error"); }
 });
 
-// OTRAS RUTAS ESTÁNDAR
+// 3. ACTUALIZAR FOTO
+router.put("/:id/update-pic", async (req, res) => {
+  if (req.body.userId === req.params.id) {
+    try { await User.findByIdAndUpdate(req.params.id, { $set: { profilePic: req.body.profilePic } }); res.status(200).json("Actualizado"); } catch (err) { res.status(500).json(err); }
+  } else { res.status(403).json("Error"); }
+});
+
+// 4. ACTUALIZAR BIOGRAFÍA (NUEVO)
+router.put("/:id/update-bio", async (req, res) => {
+  if (req.body.userId === req.params.id) {
+    try {
+      await User.findByIdAndUpdate(req.params.id, { $set: { desc: req.body.desc } });
+      res.status(200).json("Bio actualizada");
+    } catch (err) { res.status(500).json(err); }
+  } else { res.status(403).json("Error"); }
+});
+
+// OTRAS RUTAS
 router.get("/all/everybody", async (req, res) => { try { const users = await User.find({}, "username profilePic _id followers followings"); res.status(200).json(users); } catch (err) { res.status(500).json(err); } });
 router.get("/search/:query", async (req, res) => { try { const query = req.params.query; const users = await User.find({ username: { $regex: query, $options: "i" } }).limit(10); res.status(200).json(users); } catch (err) { res.status(500).json(err); } });
-router.put("/:id/update-pic", async (req, res) => { if (req.body.userId === req.params.id) { try { await User.findByIdAndUpdate(req.params.id, { $set: { profilePic: req.body.profilePic } }); res.status(200).json("Actualizado"); } catch (err) { res.status(500).json(err); } } else { res.status(403).json("Error"); } });
 router.get("/:id", async (req, res) => { try { const user = await User.findById(req.params.id); const { password, updatedAt, ...other } = user._doc; res.status(200).json(other); } catch (err) { res.status(500).json(err); } });
 router.get("/u/:username", async (req, res) => { try { const user = await User.findOne({ username: req.params.username }); const { password, updatedAt, ...other } = user._doc; res.status(200).json(other); } catch (err) { res.status(500).json(err); } });
-
-// --- RUTA NUEVA: OBTENER USUARIOS POR LISTA DE IDS (BULK) ---
-router.post("/bulk", async (req, res) => {
-  try {
-    // Busca todos los usuarios cuyo _id esté en la lista que enviamos
-    const users = await User.find({ _id: { $in: req.body.ids } }, "username profilePic");
-    res.status(200).json(users);
-  } catch (err) {
-    res.status(500).json(err);
-  }
-});
+router.post("/bulk", async (req, res) => { try { const users = await User.find({ _id: { $in: req.body.ids } }, "username profilePic"); res.status(200).json(users); } catch (err) { res.status(500).json(err); } });
 
 module.exports = router;

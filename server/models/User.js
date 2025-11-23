@@ -5,8 +5,10 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   profilePic: { type: String, default: "" },
+  // NUEVO CAMPO: DESCRIPCIÓN / BIO
+  desc: { type: String, default: "", max: 100 }, 
   followers: { type: Array, default: [] }, 
-  followings: { type: Array, default: [] }, // <--- ESTO DEBE SER PLURAL
+  followings: { type: Array, default: [] },
   isAdmin: { type: Boolean, default: false },
 }, { timestamps: true });
 

@@ -3,7 +3,6 @@ import axios from "axios";
 import { useParams } from "react-router-dom"; 
 import "./Profile.css"; 
 
-// TU LINK DE RENDER
 const API_URL = "https://insta-clon-api.onrender.com/api"; 
 
 // TUS DATOS
@@ -16,7 +15,10 @@ export default function Profile() {
   const [followed, setFollowed] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   
-  // ESTADOS DEL MODAL INTERACTIVO
+  // ESTADOS PARA EDICIÓN DE BIO
+  const [editingBio, setEditingBio] = useState(false);
+  const [bioText, setBioText] = useState("");
+
   const [selectedPost, setSelectedPost] = useState(null); 
   const [commentText, setCommentText] = useState("");
 
@@ -29,8 +31,11 @@ export default function Profile() {
       try {
         const userRes = await axios.get(`${API_URL}/users/u/${username}`);
         setUser(userRes.data);
+        setBioText(userRes.data.desc || ""); // Cargar la bio actual
+        
         const postsRes = await axios.get(`${API_URL}/posts/profile/${username}`);
         setPosts(postsRes.data);
+
         const myProfileRes = await axios.get(`${API_URL}/users/${currentUser._id}`);
         if (myProfileRes.data.followings.includes(userRes.data._id)) setFollowed(true);
       } catch (err) {}
@@ -38,45 +43,18 @@ export default function Profile() {
     fetchUserAndPosts();
   }, [username, currentUser._id]);
 
-  // --- FUNCIONES DEL MODAL (LIKES Y COMENTARIOS) ---
-  
-  // Dar Like dentro del Modal
-  const handleModalLike = async () => {
+  // --- GUARDAR BIO ---
+  const handleSaveBio = async () => {
     try {
-      await axios.put(`${API_URL}/posts/${selectedPost._id}/like`, { userId: currentUser._id });
-      
-      // Actualizamos el estado del post seleccionado para que se vea el cambio
-      let updatedLikes = [...selectedPost.likes];
-      if (updatedLikes.includes(currentUser._id)) {
-        updatedLikes = updatedLikes.filter(id => id !== currentUser._id);
-      } else {
-        updatedLikes.push(currentUser._id);
-      }
-      
-      setSelectedPost({ ...selectedPost, likes: updatedLikes });
-    } catch (err) {}
-  };
-
-  // Comentar dentro del Modal
-  const handleModalComment = async (e) => {
-    e.preventDefault();
-    if (!commentText) return;
-
-    try {
-      const res = await axios.put(`${API_URL}/posts/${selectedPost._id}/comment`, {
+      await axios.put(`${API_URL}/users/${currentUser._id}/update-bio`, {
         userId: currentUser._id,
-        username: currentUser.username,
-        text: commentText
+        desc: bioText
       });
-      
-      // Agregamos el nuevo comentario a la lista visual
-      const updatedComments = [...selectedPost.comments, res.data];
-      setSelectedPost({ ...selectedPost, comments: updatedComments });
-      setCommentText("");
-    } catch (err) { console.error(err); }
+      setUser({ ...user, desc: bioText }); // Actualizar visualmente
+      setEditingBio(false); // Cerrar editor
+    } catch (err) { alert("Error al guardar bio"); }
   };
 
-  // --- FUNCIONES DE PERFIL (Subir foto, Seguir) ---
   const uploadImage = async (file) => {
     setIsUploading(true);
     const data = new FormData();
@@ -111,6 +89,26 @@ export default function Profile() {
     } catch (err) {}
   };
 
+  const handleModalLike = async () => {
+    try {
+      await axios.put(`${API_URL}/posts/${selectedPost._id}/like`, { userId: currentUser._id });
+      let updatedLikes = [...selectedPost.likes];
+      if (updatedLikes.includes(currentUser._id)) { updatedLikes = updatedLikes.filter(id => id !== currentUser._id); } 
+      else { updatedLikes.push(currentUser._id); }
+      setSelectedPost({ ...selectedPost, likes: updatedLikes });
+    } catch (err) {}
+  };
+
+  const handleModalComment = async (e) => {
+    e.preventDefault(); if (!commentText) return;
+    try {
+      const res = await axios.put(`${API_URL}/posts/${selectedPost._id}/comment`, { userId: currentUser._id, username: currentUser.username, text: commentText });
+      const updatedComments = [...selectedPost.comments, res.data];
+      setSelectedPost({ ...selectedPost, comments: updatedComments });
+      setCommentText("");
+    } catch (err) {}
+  };
+
   const isMyProfile = username === currentUser.username;
   const isLiked = selectedPost?.likes.includes(currentUser._id);
 
@@ -130,15 +128,42 @@ export default function Profile() {
           <div className="profile-name-row">
             <h2 className="profile-username">{user.username}</h2>
             {!isMyProfile && <button className={`profile-follow-btn ${followed ? "following" : ""}`} onClick={handleFollow}>{followed ? "Siguiendo" : "Seguir"}</button>}
-            {isMyProfile && <button className="profile-edit-btn" onClick={() => profileInputRef.current.click()}>✏️ Editar Foto</button>}
+            {isMyProfile && <button className="profile-edit-btn" onClick={() => profileInputRef.current.click()}>📷 Foto</button>}
           </div>
+          
           <div className="profile-stats"><span><b>{posts.length}</b> pubs</span><span><b>{user.followers?.length}</b> seguidores</span><span><b>{user.followings?.length}</b> seguidos</span></div>
+          
+          {/* --- SECCIÓN DE BIOGRAFÍA --- */}
+          <div className="profile-bio-section">
+            {isMyProfile && editingBio ? (
+                <div className="bio-edit-form">
+                    <textarea 
+                        value={bioText} 
+                        onChange={(e) => setBioText(e.target.value)} 
+                        className="bio-input"
+                        placeholder="Escribe algo sobre ti..."
+                        maxLength="100"
+                    />
+                    <div style={{display:"flex", gap:"10px", marginTop:"5px"}}>
+                        <button className="bio-save-btn" onClick={handleSaveBio}>Guardar</button>
+                        <button className="bio-cancel-btn" onClick={() => setEditingBio(false)}>Cancelar</button>
+                    </div>
+                </div>
+            ) : (
+                <div className="bio-display">
+                    <p>{user.desc || <span style={{color:"gray", fontStyle:"italic"}}>Sin descripción.</span>}</p>
+                    {isMyProfile && (
+                        <span className="edit-bio-icon" onClick={() => setEditingBio(true)} title="Editar biografía">✏️</span>
+                    )}
+                </div>
+            )}
+          </div>
+
         </div>
       </div>
 
       <hr className="profile-divider"/>
 
-      {/* GRID DE FOTOS */}
       <div className="profile-grid">
         {posts.map((p) => (
           <div key={p._id} className="grid-item" onClick={() => setSelectedPost(p)}>
@@ -148,63 +173,22 @@ export default function Profile() {
         ))}
       </div>
 
-      {/* === MODAL INTERACTIVO === */}
       {selectedPost && (
         <div className="modal-overlay" onClick={() => setSelectedPost(null)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            
-            {/* IZQUIERDA: IMAGEN */}
-            <div className="modal-img-container">
-                <img src={selectedPost.img} alt="" className="modal-img" />
-            </div>
-            
-            {/* DERECHA: INFO Y COMENTARIOS */}
+            <div className="modal-img-container"><img src={selectedPost.img} alt="" className="modal-img" /></div>
             <div className="modal-info">
-                <div className="modal-header">
-                    <img src={user.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" style={{width:"30px", height:"30px", borderRadius:"50%", objectFit:"cover", marginRight:"10px"}} />
-                    <b>{user.username}</b>
-                </div>
-                
+                <div className="modal-header"><img src={user.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" style={{width:"30px", height:"30px", borderRadius:"50%", objectFit:"cover", marginRight:"10px"}} /><b>{user.username}</b></div>
                 <div className="modal-desc">
-                    {/* Descripción Original */}
-                    <div style={{marginBottom:"15px", display:"flex", alignItems:"flex-start"}}>
-                        <img src={user.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" style={{width:"25px", height:"25px", borderRadius:"50%", marginRight:"10px"}} />
-                        <div>
-                            <span style={{fontWeight:"bold"}}>{user.username}</span> {selectedPost.desc}
-                        </div>
-                    </div>
-
-                    {/* Lista de Comentarios */}
-                    {selectedPost.comments.map((c, i) => (
-                        <div key={i} style={{marginBottom:"10px", display:"flex", alignItems:"flex-start"}}>
-                            {/* FOTO DEL USUARIO QUE COMENTA */}
-                            <img src={c.userPic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" style={{width:"25px", height:"25px", borderRadius:"50%", objectFit:"cover", marginRight:"10px"}} />
-                            <div>
-                                <span style={{fontWeight:"bold"}}>{c.username}</span> {c.text}
-                            </div>
-                        </div>
-                    ))}
+                    <div style={{marginBottom:"15px", display:"flex", alignItems:"flex-start"}}><img src={user.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" style={{width:"25px", height:"25px", borderRadius:"50%", marginRight:"10px"}} /><div><span style={{fontWeight:"bold"}}>{user.username}</span> {selectedPost.desc}</div></div>
+                    {selectedPost.comments.map((c, i) => (<div key={i} style={{marginBottom:"10px", display:"flex", alignItems:"flex-start"}}><img src={c.userPic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" style={{width:"25px", height:"25px", borderRadius:"50%", objectFit:"cover", marginRight:"10px"}} /><div><span style={{fontWeight:"bold"}}>{c.username}</span> {c.text}</div></div>))}
                 </div>
-                
-                <div className="modal-stats">
-                    <div style={{display:"flex", gap:"15px", fontSize:"24px", marginBottom:"10px"}}>
-                        <span onClick={handleModalLike} style={{cursor:"pointer"}}>{isLiked ? "❤️" : "🤍"}</span>
-                        <span>💬</span>
-                    </div>
-                    <div style={{fontWeight:"bold", marginBottom:"5px"}}>{selectedPost.likes.length} Me gusta</div>
-                    <div style={{fontSize:"10px", color:"gray"}}>{new Date(selectedPost.createdAt).toDateString()}</div>
-                </div>
-
-                {/* INPUT PARA COMENTAR */}
-                <form onSubmit={handleModalComment} className="modal-comment-form">
-                    <input type="text" placeholder="Agrega un comentario..." value={commentText} onChange={(e) => setCommentText(e.target.value)} />
-                    <button type="submit" disabled={!commentText}>Publicar</button>
-                </form>
+                <div className="modal-stats"><div style={{display:"flex", gap:"15px", fontSize:"24px", marginBottom:"10px"}}><span onClick={handleModalLike} style={{cursor:"pointer"}}>{isLiked ? "❤️" : "🤍"}</span><span>💬</span></div><div style={{fontWeight:"bold", marginBottom:"5px"}}>{selectedPost.likes.length} Me gusta</div><div style={{fontSize:"10px", color:"gray"}}>{new Date(selectedPost.createdAt).toDateString()}</div></div>
+                <form onSubmit={handleModalComment} className="modal-comment-form"><input type="text" placeholder="Comentar..." value={commentText} onChange={(e) => setCommentText(e.target.value)} /><button type="submit" disabled={!commentText}>Publicar</button></form>
             </div>
           </div>
         </div>
       )}
-
     </div>
   );
 }
