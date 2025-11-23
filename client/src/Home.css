@@ -154,3 +154,13 @@
 .comment-form input { flex: 1; border: none; border-bottom: 1px solid #ccc; padding: 5px; outline: none; }
 .comment-form button { border: none; background: white; color: #0095f6; font-weight: bold; cursor: pointer; }
 .delete-btn { background: transparent; border: none; color: red; cursor: pointer; margin-top: 10px; font-size: 12px; }
+
+/* === ARREGLO URGENTE DE IMÁGENES === */
+.post-img {
+  width: 100% !important;  /* Fuerza a ocupar el ancho del contenedor */
+  height: auto !important; /* ¡LA CLAVE! La altura se calcula sola para no estirarse */
+  margin-top: 10px;
+  border-radius: 5px;
+  object-fit: unset !important; /* Elimina cualquier efecto de recorte o estiramiento forzado */
+  max-height: none !important; /* Quitamos límites de altura para que se vea la foto completa */
+}
