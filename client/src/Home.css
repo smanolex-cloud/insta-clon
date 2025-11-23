@@ -1,141 +1,51 @@
 /* === CONTENEDOR PRINCIPAL === */
-.home-container {
-  background-color: #121212;
-  min-height: 100vh;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  color: #e0e0e0;
-  width: 100%;
-  overflow-x: hidden; /* Evita scroll lateral accidental */
-}
+.home-container { background-color: #121212; min-height: 100vh; font-family: sans-serif; color: #e0e0e0; overflow-x: hidden; }
 
-/* === BARRA DE NAVEGACIÓN SUPERIOR === */
-.navbar {
-  background-color: #1e1e1e;
-  padding: 0 15px;
-  border-bottom: 1px solid #333333;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  height: 60px;
-  width: 100%;
-  box-sizing: border-box;
-}
+/* NAVBAR */
+.navbar { background-color: #1e1e1e; padding: 0 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; height: 60px; }
+.navbar h2 { margin: 0; font-family: cursive; font-size: 24px; color: #fff; }
 
-.navbar h2 {
-  margin: 0;
-  font-family: cursive;
-  font-size: 24px;
-  color: #ffffff;
-}
-
-/* BUSCADOR */
+/* BÚSQUEDA */
 .search-bar-container { position: relative; }
-.search-input-nav {
-  padding: 8px 15px;
-  border-radius: 8px;
-  border: 1px solid #333333;
-  background-color: #2a2a2a;
-  color: #e0e0e0;
-  outline: none;
-  width: 250px;
-}
-
-/* RESULTADOS BÚSQUEDA */
-.search-results {
-  position: absolute;
-  top: 45px;
-  left: 0;
-  width: 300px;
-  background-color: #1e1e1e;
-  border: 1px solid #333333;
-  border-radius: 5px;
-  box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
-  z-index: 9999;
-  overflow: hidden;
-}
-.search-item {
-  padding: 10px;
-  border-bottom: 1px solid #333333;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-  cursor: pointer;
-  color: #e0e0e0;
-}
+.search-input-nav { padding: 8px 15px; border-radius: 8px; border: 1px solid #333; background-color: #2a2a2a; color: #e0e0e0; outline: none; width: 250px; }
+.search-results { position: absolute; top: 45px; left: 0; width: 300px; background-color: #1e1e1e; border: 1px solid #333; border-radius: 5px; box-shadow: 0px 4px 12px rgba(0,0,0,0.5); z-index: 9999; overflow: hidden; }
+.search-item { padding: 10px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; font-size: 14px; cursor: pointer; color: #e0e0e0; }
 .search-item:hover { background-color: #2a2a2a; }
 
 /* BOTONES */
 .mini-follow-btn { background: #8e24aa; color: white; border: none; border-radius: 4px; padding: 4px 10px; cursor: pointer; font-size: 12px; font-weight: bold; min-width: 80px; }
 .follow-btn { background-color: transparent; color: #ba68c8; border: none; padding: 0; cursor: pointer; font-weight: bold; font-size: 12px; }
-.mini-follow-btn.following-mode, .follow-btn.following-mode { background-color: #333333 !important; color: #a0a0a0 !important; cursor: default; border: 1px solid #444; padding: 4px 10px; border-radius: 4px; text-decoration: none; }
-
-.chat-btn { padding: 5px 10px; background: #1e1e1e; color: #e0e0e0; border: 1px solid #333333; border-radius: 5px; cursor: pointer; font-size: 18px; }
-.chat-btn:hover { background: #2a2a2a; }
-.logout-btn { background: #1e1e1e; color: #ff5252; border: 1px solid #333333; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
+.mini-follow-btn.following-mode, .follow-btn.following-mode { background-color: #333; color: #a0a0a0; cursor: default; border: 1px solid #444; padding: 4px 10px; border-radius: 4px; text-decoration: none; }
+.chat-btn { padding: 5px 10px; background: #1e1e1e; color: #e0e0e0; border: 1px solid #333; border-radius: 5px; cursor: pointer; font-size: 18px; }
+.logout-btn { background: #1e1e1e; color: #ff5252; border: 1px solid #333; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
 .chat-btn-container { display: flex; align-items: center; }
 
-/* ESTRUCTURA PRINCIPAL */
-.main-content { 
-  display: flex; 
-  justify-content: center; 
-  padding-top: 20px; 
-  gap: 30px; 
-  width: 100%;
-}
-
-.feed-container { 
-  flex: 5; 
-  max-width: 600px; 
-}
-
-.rightbar { 
-  flex: 3; 
-  max-width: 300px; 
-  height: fit-content; 
-  display: none; 
-  color: #e0e0e0; 
-}
-
-/* En pantallas grandes mostramos la barra derecha */
+/* CONTENIDO */
+.main-content { display: flex; justify-content: center; padding-top: 20px; gap: 30px; width: 100%; }
+.feed-container { flex: 5; max-width: 600px; }
+.rightbar { flex: 3; max-width: 300px; height: fit-content; display: none; color: #e0e0e0; }
 @media (min-width: 900px) { .rightbar { display: block; } }
-
 .user-list { list-style: none; padding: 0; }
 .user-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
 
-/* CAJAS (PUBLICAR Y POSTS) */
-.share-box, .post {
-  background-color: #1e1e1e;
-  border-radius: 8px;
-  border: 1px solid #333333;
-  padding: 15px;
-  margin-bottom: 20px;
-  color: #e0e0e0;
-  width: 100%; /* Asegurar que ocupe el contenedor */
-  box-sizing: border-box; /* Evita que el padding rompa el ancho */
-}
+/* POSTS */
+.share-box, .post { background-color: #1e1e1e; border-radius: 8px; border: 1px solid #333; padding: 15px; margin-bottom: 20px; color: #e0e0e0; width: 100%; box-sizing: border-box; }
 .share-top { display: flex; align-items: center; margin-bottom: 15px; }
-.profile-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 15px; border: 1px solid #333333; }
+.profile-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 15px; border: 1px solid #333; }
 .share-input { width: 100%; border: none; outline: none; font-size: 16px; background: transparent; color: #e0e0e0; }
-.share-bottom { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #333333; padding-top: 10px; }
-.url-input { border: 1px solid #333333; padding: 8px; border-radius: 20px; width: 70%; background: #2a2a2a; color: #e0e0e0; outline: none; }
+.share-bottom { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #333; padding-top: 10px; }
+.url-input { border: 1px solid #333; padding: 8px; border-radius: 20px; width: 70%; background: #2a2a2a; color: #e0e0e0; outline: none; }
 .share-btn { background-color: #8e24aa; color: white; border: none; padding: 6px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
 .file-upload-btn { background-color: #2a2a2a; color: #e0e0e0; padding: 5px 10px; border-radius: 5px; border: 1px solid #333; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 5px; }
-
 .post-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; }
-.post-username { font-weight: bold; font-size: 14px; cursor: pointer; color: #ffffff; }
+.post-username { font-weight: bold; font-size: 14px; cursor: pointer; color: #fff; }
 .post-date { font-size: 12px; color: #a0a0a0; }
 .post-text { display: block; padding: 0 15px 10px 15px; font-size: 14px; }
 .post-img { width: 100% !important; height: auto !important; margin-top: 10px; object-fit: unset !important; max-height: none !important; display: block; background: #000; }
 .post-bottom { padding: 10px 15px; }
 .post-actions { display: flex; align-items: center; margin-bottom: 10px; color: #e0e0e0; }
 .post-info { font-weight: 500; margin-bottom: 10px; color: #e0e0e0; }
-
-/* COMENTARIOS */
-.comments-section { border-top: 1px solid #333333; padding-top: 10px; margin-top: 10px; }
+.comments-section { border-top: 1px solid #333; padding-top: 10px; margin-top: 10px; }
 .comments-list { max-height: 300px; overflow-y: auto; margin-bottom: 10px; }
 .comment-item-row { display: flex; align-items: flex-start; margin-bottom: 15px; padding-right: 5px; }
 .comment-form { display: flex; gap: 10px; align-items: center; border-top: 1px solid #333; padding-top: 10px; }
@@ -143,112 +53,62 @@
 .comment-form button { border: none; background: transparent; color: #ba68c8; font-weight: bold; cursor: pointer; }
 .comment-form button:disabled { color: #555; cursor: default; }
 .delete-btn { background: transparent; border: none; color: #ff5252; cursor: pointer; margin-top: 10px; font-size: 12px; width: 100%; text-align: right; }
-
-/* ANIMACIONES Y NOTIFICACIONES */
 .post-img-container { position: relative; overflow: hidden; }
 .heart-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 100px; color: white; pointer-events: none; opacity: 0; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-shadow: 0 0 20px rgba(0,0,0,0.5); }
 .heart-overlay.animate { transform: translate(-50%, -50%) scale(1.5); opacity: 1; animation: fadeOutHeart 0.8s forwards; }
 @keyframes fadeOutHeart { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } 20% { transform: translate(-50%, -50%) scale(1.5); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0); } }
 
+/* NOTIFICACIONES (ESTILO GLOBAL NUEVO) */
 .noti-badge { position: absolute; top: -5px; right: -5px; background-color: #d32f2f; color: white; border-radius: 50%; padding: 2px 5px; font-size: 10px; font-weight: bold; }
 .noti-badge-chat { position: absolute; top: -5px; right: -5px; background-color: #8e24aa; color: white; border-radius: 50%; padding: 2px 5px; font-size: 10px; font-weight: bold; z-index: 2; pointer-events: none; }
-.noti-dropdown { position: absolute; top: 35px; right: 0; width: 250px; background-color: #1e1e1e; border: 1px solid #333333; border-radius: 5px; box-shadow: 0px 4px 12px rgba(0,0,0,0.5); z-index: 9999; max-height: 300px; overflow-y: auto; }
-.noti-item { padding: 10px; border-bottom: 1px solid #333333; font-size: 13px; color: #e0e0e0; }
+
+/* PANEL DE NOTIFICACIONES (PC) */
+.noti-dropdown { position: absolute; top: 35px; right: 0; width: 250px; background-color: #1e1e1e; border: 1px solid #333; border-radius: 5px; box-shadow: 0px 4px 12px rgba(0,0,0,0.5); z-index: 9999; max-height: 300px; overflow-y: auto; }
+
+/* PANEL DE NOTIFICACIONES (MOVIL - GLOBAL) */
+.noti-dropdown-global {
+  position: fixed;
+  bottom: 60px; /* Arriba de la barra movil */
+  left: 0;
+  width: 100%;
+  max-height: 50vh;
+  background-color: #1e1e1e;
+  border-top: 1px solid #333;
+  z-index: 9999;
+  overflow-y: auto;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
+}
+
+.noti-item { padding: 10px; border-bottom: 1px solid #333; font-size: 13px; color: #e0e0e0; }
 .noti-item:hover { background-color: #2a2a2a; }
 
 /* =========================================
-   MODO MÓVIL (Arreglo del diseño feo)
+   MODO MÓVIL
    ========================================= */
-
-.mobile-navbar { display: none; } /* Oculta en PC */
+.mobile-navbar { display: none; } 
+.mobile-only { display: none; }
 
 @media (max-width: 768px) {
-  
-  /* 1. OCULTAR LO QUE ESTORBA ARRIBA */
   .desktop-only { display: none !important; }
+  .mobile-only { display: block !important; } /* Muestra el chat arriba */
   
-  /* 2. ARREGLAR EL ANCHO (QUITA EL ESPACIO NEGRO) */
-  .main-content {
-    display: block; /* Ya no es flex, para que ocupe todo */
-    width: 100%;
-    padding-top: 10px;
-  }
-
-  .feed-container {
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    padding-bottom: 80px; /* Espacio para la barra de abajo */
-  }
-
+  .home-container { padding-bottom: 70px; }
+  .main-content { display: block; width: 100%; padding-top: 10px; }
+  .feed-container { width: 100%; max-width: 100%; margin: 0; padding-bottom: 80px; }
   .rightbar { display: none !important; }
-
-  /* 3. AJUSTAR BARRA SUPERIOR */
-  .navbar {
-    justify-content: space-between; /* Logo izquierda, Salir derecha */
-    padding: 0 15px;
-  }
-
-  /* 4. MOSTRAR BARRA INFERIOR */
-  .mobile-navbar {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 60px;
-    background-color: #1e1e1e;
-    border-top: 1px solid #333;
-    z-index: 1000;
-    padding-bottom: env(safe-area-inset-bottom); /* Para iPhone X+ */
-  }
-
-  .mobile-nav-item {
-    font-size: 26px;
-    color: #e0e0e0;
-    cursor: pointer;
-    background: none;
-    border: none;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .mobile-nav-item:active { color: #8e24aa; transform: scale(0.9); }
-
-  /* Botón central "Subir" más grande */
-  .add-btn-mobile {
-    font-size: 30px;
-    background-color: #2a2a2a;
-    width: 45px;
-    height: 45px;
-    border-radius: 12px;
-    border: 1px solid #444;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .mobile-profile-img {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #e0e0e0;
-  }
   
-  .mobile-noti-badge {
-    position: absolute;
-    top: -2px;
-    right: -2px;
-    background-color: red;
-    color: white;
-    font-size: 9px;
-    padding: 2px 4px;
-    border-radius: 50%;
-    border: 2px solid #1e1e1e;
-  }
+  .navbar { justify-content: space-between; padding: 0 15px; }
+
+  /* BARRA INFERIOR */
+  .mobile-navbar { display: flex; justify-content: space-around; align-items: center; position: fixed; bottom: 0; left: 0; width: 100%; height: 60px; background-color: #1e1e1e; border-top: 1px solid #333; z-index: 1000; padding-bottom: 5px; }
+  .mobile-nav-item { font-size: 26px; color: #e0e0e0; cursor: pointer; background: none; border: none; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+  .mobile-nav-item:active { color: #8e24aa; transform: scale(0.9); }
+  
+  .add-btn-mobile { font-size: 32px; background-color: #2a2a2a; width: 45px; height: 45px; border-radius: 12px; border: 1px solid #444; display: flex; align-items: center; justify-content: center; padding-bottom: 5px; }
+  .mobile-profile-img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 2px solid #e0e0e0; }
+  
+  .mobile-noti-badge { position: absolute; top: -2px; right: -2px; background-color: red; color: white; font-size: 9px; padding: 2px 4px; border-radius: 50%; border: 2px solid #1e1e1e; }
+  
+  /* Ajuste de notificaciones en PC vs Movil */
+  .noti-dropdown { display: none; } /* Ocultamos el dropdown viejo en movil */
 }
