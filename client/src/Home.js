@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Post from "./Post";
 import "./Home.css";
@@ -6,46 +6,49 @@ import "./Home.css";
 // TU LINK DE RENDER
 const API_URL = "https://insta-clon-api.onrender.com/api"; 
 
+// TUS DATOS DE CLOUDINARY (YA CONFIGURADOS)
+const CLOUD_NAME = "dbf9mqzcv"; 
+const UPLOAD_PRESET = "insta_clon"; 
+
 export default function Home() {
   const [posts, setPosts] = useState([]);
   const [users, setUsers] = useState([]);
-  const [desc, setDesc] = useState("");
-  const [img, setImg] = useState("");
   
-  // BUSCADOR
+  // Estados para crear publicación
+  const [desc, setDesc] = useState("");
+  const [imgUrl, setImgUrl] = useState(""); // Guardamos la URL que nos da Cloudinary
+  const [isUploading, setIsUploading] = useState(false); // Para bloquear el botón mientras sube
+
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   
-  // NOTIFICACIONES (SEPARADAS)
-  const [notifications, setNotifications] = useState([]); // Todas
-  const [bellCount, setBellCount] = useState(0);          // Contador Campana
-  const [msgCount, setMsgCount] = useState(0);            // Contador Chat
+  // Notificaciones
+  const [notifications, setNotifications] = useState([]);
+  const [bellCount, setBellCount] = useState(0);
+  const [msgCount, setMsgCount] = useState(0);
   const [showNotiPanel, setShowNotiPanel] = useState(false);
 
   const user = JSON.parse(localStorage.getItem("user"));
   if (!user.followings) user.followings = [];
 
+  // Referencia para el input oculto de perfil
+  const profileInputRef = useRef();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // 1. Posts
         const postsRes = await axios.get(`${API_URL}/posts/timeline/all`);
         setPosts(postsRes.data);
         
-        // 2. Usuarios
         const usersRes = await axios.get(`${API_URL}/users/all/everybody`);
         setUsers(usersRes.data.filter(u => u._id !== user._id));
         
-        // 3. Notificaciones
         const notiRes = await axios.get(`${API_URL}/notifications/${user._id}`);
         setNotifications(notiRes.data);
         
-        // --- LÓGICA DE SEPARACIÓN ---
-        // Cuenta para la Campana: No leídas y que NO sean mensajes
         const unreadBell = notiRes.data.filter(n => !n.isRead && n.type !== 'message').length;
         setBellCount(unreadBell);
 
-        // Cuenta para el Chat: No leídas y que SÍ sean mensajes
         const unreadMsg = notiRes.data.filter(n => !n.isRead && n.type === 'message').length;
         setMsgCount(unreadMsg);
 
@@ -54,34 +57,86 @@ export default function Home() {
     fetchData();
   }, [user._id]);
 
-  // AL ABRIR LA CAMPANA (Solo limpiamos notificaciones sociales)
+  // --- FUNCIÓN MAESTRA PARA SUBIR IMAGEN A CLOUDINARY ---
+  const uploadImage = async (file) => {
+    setIsUploading(true);
+    const data = new FormData();
+    data.append("file", file);
+    data.append("upload_preset", UPLOAD_PRESET);
+
+    try {
+      const res = await axios.post(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, data);
+      setIsUploading(false);
+      return res.data.secure_url; // Retorna el link de internet de la foto
+    } catch (err) {
+      console.error(err);
+      setIsUploading(false);
+      alert("Error al subir imagen. Verifica tu conexión.");
+      return null;
+    }
+  };
+
+  // CAMBIAR FOTO DE PERFIL (DESDE ARCHIVO)
+  const handleProfileFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const url = await uploadImage(file); // Subir a nube
+    if (url) {
+      // Guardar en BD
+      try {
+        await axios.put(`${API_URL}/users/${user._id}/update-pic`, {
+          userId: user._id,
+          profilePic: url
+        });
+        const updatedUser = { ...user, profilePic: url };
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        window.location.reload();
+      } catch (err) { alert("Error guardando en perfil"); }
+    }
+  };
+
+  // SELECCIONAR FOTO PARA PUBLICACIÓN
+  const handlePostFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const url = await uploadImage(file);
+      if (url) setImgUrl(url);
+    }
+  };
+
+  // NOTIFICACIONES
   const handleNotiClick = async () => {
     if (!showNotiPanel && bellCount > 0) {
-      try {
-        // Le decimos al server: Marca leídas todas MENOS los mensajes
-        await axios.put(`${API_URL}/notifications/read/${user._id}`, { exclude: "message" });
-        setBellCount(0);
-      } catch(err) {}
+      try { await axios.put(`${API_URL}/notifications/read/${user._id}`, { exclude: "message" }); setBellCount(0); } catch(err) {}
     }
     setShowNotiPanel(!showNotiPanel);
   };
 
-  // AL IR AL CHAT (Limpiamos notificaciones de mensajes)
   const handleChatClick = async () => {
-    if (msgCount > 0) {
-        try {
-            // Le decimos al server: Marca leídos SOLO los mensajes
-            await axios.put(`${API_URL}/notifications/read/${user._id}`, { type: "message" });
-        } catch (err) {}
-    }
+    if (msgCount > 0) { try { await axios.put(`${API_URL}/notifications/read/${user._id}`, { type: "message" }); } catch (err) {} }
     window.location.href = "/chat";
   };
 
   const handleSearch = async (e) => { const query = e.target.value; setSearchQuery(query); if (query.length > 0) { try { const res = await axios.get(`${API_URL}/users/search/${query}`); setSearchResults(res.data); } catch (err) {} } else { setSearchResults([]); } };
   const goToProfile = (username) => { window.location.href = `/profile/${username}`; };
-  const changeProfilePic = async () => { const url = prompt("URL foto:"); if (!url) return; try { await axios.put(`${API_URL}/users/${user._id}/update-pic`, { userId: user._id, profilePic: url }); const updatedUser = { ...user, profilePic: url }; localStorage.setItem("user", JSON.stringify(updatedUser)); window.location.reload(); } catch (err) {} };
-  const handleFollow = async (userIdToFollow) => { const isFollowing = user.followings.includes(userIdToFollow); try { if (isFollowing) { await axios.put(`${API_URL}/users/${userIdToFollow}/unfollow`, { userId: user._id }); user.followings = user.followings.filter(id => id !== userIdToFollow); } else { await axios.put(`${API_URL}/users/${userIdToFollow}/follow`, { userId: user._id }); user.followings.push(userIdToFollow); } localStorage.setItem("user", JSON.stringify(user)); window.location.reload(); } catch (err) {} };
-  const handleSubmit = async (e) => { e.preventDefault(); const newPost = { userId: user._id, username: user.username, desc, img }; try { await axios.post(`${API_URL}/posts`, newPost); window.location.reload(); } catch (err) {} };
+  
+  const handleFollow = async (userIdToFollow) => {
+    const isFollowing = user.followings.includes(userIdToFollow);
+    try {
+      if (isFollowing) { await axios.put(`${API_URL}/users/${userIdToFollow}/unfollow`, { userId: user._id }); user.followings = user.followings.filter(id => id !== userIdToFollow); }
+      else { await axios.put(`${API_URL}/users/${userIdToFollow}/follow`, { userId: user._id }); user.followings.push(userIdToFollow); }
+      localStorage.setItem("user", JSON.stringify(user)); window.location.reload();
+    } catch (err) { alert("Error"); }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!imgUrl && !desc) return alert("Escribe algo o sube una foto");
+    const newPost = { userId: user._id, username: user.username, desc, img: imgUrl };
+    try { await axios.post(`${API_URL}/posts`, newPost); window.location.reload(); } catch (err) { console.error(err); }
+  };
+
   const handleDelete = async (postId) => { if (!window.confirm("¿Borrar?")) return; try { await axios.delete(`${API_URL}/posts/${postId}`, { data: { userId: user._id } }); window.location.reload(); } catch (err) {} };
   const handleLogout = () => { localStorage.removeItem("user"); window.location.reload(); };
 
@@ -97,8 +152,8 @@ export default function Home() {
                 const isFollowing = user.followings.includes(u._id);
                 return (
                   <div key={u._id} className="search-item" onClick={() => goToProfile(u.username)}>
-                    <div style={{display:"flex", alignItems:"center", gap:"10px"}}><img src={u.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" style={{width:"30px", height:"30px", borderRadius:"50%"}}/><span style={{fontWeight: "bold"}}>{u.username}</span></div>
-                    {u._id !== user._id && <button className={`mini-follow-btn ${isFollowing ? "following-mode" : ""}`} onClick={(e) => { e.stopPropagation(); handleFollow(u._id); }}>{isFollowing ? "Siguiendo" : "Seguir"}</button>}
+                    <div style={{display:"flex", alignItems:"center", gap:"10px"}}><img src={u.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" style={{width:"30px", height:"30px", borderRadius:"50%", objectFit:"cover"}}/><span>{u.username}</span></div>
+                    {u._id !== user._id && <button className={`mini-follow-btn ${user.followings.includes(u._id) ? "following-mode" : ""}`} onClick={(e) => { e.stopPropagation(); handleFollow(u._id); }}>{user.followings.includes(u._id) ? "Siguiendo" : "Seguir"}</button>}
                   </div>
                 );
               })}
@@ -107,36 +162,25 @@ export default function Home() {
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-          
-          {/* CAMPANA (Solo actividad social) */}
           <div className="notification-container" style={{position: "relative"}}>
             <span onClick={handleNotiClick} style={{fontSize: "24px", cursor: "pointer"}}>🔔</span>
             {bellCount > 0 && <span className="noti-badge">{bellCount}</span>}
-            {showNotiPanel && (
-              <div className="noti-dropdown">
-                {notifications.filter(n => n.type !== 'message').length === 0 ? (
-                  <p style={{padding:"10px", fontSize:"12px", color:"gray", textAlign:"center"}}>Sin actividad reciente</p>
-                ) : (
-                  notifications.filter(n => n.type !== 'message').map(n => (
-                    <div key={n._id} className="noti-item">
-                      <strong>{n.senderName}</strong> 
-                      {n.type === 'like' && " ❤️ le dio me gusta"}
-                      {n.type === 'comment' && " 💬 comentó tu foto"}
-                      {n.type === 'follow' && " 🤝 te empezó a seguir"}
-                    </div>
-                  ))
-                )}
-              </div>
-            )}
+            {showNotiPanel && <div className="noti-dropdown">{notifications.filter(n => n.type !== 'message').length === 0 ? <p style={{padding:"10px", fontSize:"12px"}}>Sin actividad</p> : notifications.filter(n => n.type !== 'message').map(n => <div key={n._id} className="noti-item"><strong>{n.senderName}</strong> {n.type==='like' && "❤️ like"}{n.type==='follow' && "🤝 te sigue"}{n.type==='comment' && "💬 comentó"}</div>)}</div>}
           </div>
-
-          {/* CHAT (Con contador propio) */}
+          
           <div className="chat-btn-container" style={{position: "relative"}}>
             <button onClick={handleChatClick} className="chat-btn">💬</button>
             {msgCount > 0 && <span className="noti-badge-chat">{msgCount}</span>}
           </div>
 
-          <div onClick={changeProfilePic} style={{cursor: "pointer", display:"flex", alignItems:"center", gap:"5px"}}><img src={user.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" style={{width:"30px", height:"30px", borderRadius:"50%", objectFit:"cover"}}/><span style={{ fontWeight: "bold" }}>{user.username}</span></div>
+          {/* CLIC EN FOTO -> INPUT OCULTO */}
+          <div onClick={() => profileInputRef.current.click()} style={{cursor: "pointer", display:"flex", alignItems:"center", gap:"5px"}} title="Cambiar foto">
+            <img src={user.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" style={{width:"30px", height:"30px", borderRadius:"50%", objectFit:"cover"}}/>
+            <span style={{ fontWeight: "bold" }}>{user.username}</span>
+            {/* Input invisible para foto de perfil */}
+            <input type="file" ref={profileInputRef} style={{display:"none"}} onChange={handleProfileFileChange} accept="image/*" />
+          </div>
+          
           <button onClick={handleLogout} className="logout-btn">Salir</button>
         </div>
       </div>
@@ -144,8 +188,29 @@ export default function Home() {
       <div className="main-content">
         <div className="feed-container">
           <div className="share-box">
-            <div className="share-top"><img src={user.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" className="profile-img" /><input placeholder={`¿Qué piensas?`} className="share-input" onChange={(e) => setDesc(e.target.value)} /></div>
-            <div className="share-bottom"><input placeholder="Link de imagen..." className="url-input" onChange={(e) => setImg(e.target.value)} /><button className="share-btn" onClick={handleSubmit}>Publicar</button></div>
+            <div className="share-top">
+              <img src={user.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" className="profile-img" />
+              <input placeholder={`¿Qué piensas?`} className="share-input" onChange={(e) => setDesc(e.target.value)} />
+            </div>
+            
+            {/* ZONA DE SUBIDA DE POST */}
+            <div className="share-bottom" style={{flexDirection:"column", alignItems:"flex-start", gap:"10px"}}>
+              <div style={{display:"flex", justifyContent:"space-between", width:"100%", alignItems:"center"}}>
+                <label className="file-upload-btn">
+                  📷 Elegir Foto
+                  <input type="file" onChange={handlePostFileChange} accept="image/*" style={{display:"none"}} />
+                </label>
+                <button className="share-btn" onClick={handleSubmit} disabled={isUploading}>
+                  {isUploading ? "Cargando..." : "Publicar"}
+                </button>
+              </div>
+              {/* VISTA PREVIA */}
+              {imgUrl && <div style={{position:"relative", width:"100%"}}>
+                <img src={imgUrl} alt="Preview" style={{width:"100%", maxHeight:"300px", objectFit:"contain", borderRadius:"5px", border:"1px solid #333"}} />
+                <p style={{fontSize:"12px", color:"lightgreen"}}>¡Imagen lista para publicar!</p>
+              </div>}
+            </div>
+
           </div>
           {posts.map((p) => <Post key={p._id} post={p} user={user} handleDelete={handleDelete} />)}
         </div>
