@@ -3,7 +3,7 @@ import axios from "axios";
 import Post from "./Post";
 import "./Home.css";
 
-// URL DE RENDER PARA PRODUCCIÓN
+// TU LINK DE RENDER
 const API_URL = "https://insta-clon-api.onrender.com/api"; 
 
 export default function Home() {
@@ -12,11 +12,12 @@ export default function Home() {
   const [desc, setDesc] = useState("");
   const [img, setImg] = useState("");
   
-  // ESTADOS NUEVOS
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
+  // Obtenemos el usuario y aseguramos que tenga la lista de followings
   const user = JSON.parse(localStorage.getItem("user"));
+  if (!user.followings) user.followings = [];
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,32 +45,39 @@ export default function Home() {
     }
   };
 
-  // CAMBIAR FOTO DE PERFIL
+  // CAMBIAR FOTO
   const changeProfilePic = async () => {
     const url = prompt("Pega el URL de tu nueva foto de perfil:");
     if (!url) return;
-    
     try {
       await axios.put(`${API_URL}/users/${user._id}/update-pic`, {
         userId: user._id,
         profilePic: url
       });
-      // Actualizamos la memoria local para ver el cambio al instante
       const updatedUser = { ...user, profilePic: url };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       window.location.reload();
     } catch (err) { alert("Error al actualizar foto"); }
   };
 
+  // --- AQUÍ ESTÁ EL ARREGLO ---
   const handleFollow = async (userIdToFollow) => {
     try {
+      // 1. Avisar al servidor
       await axios.put(`${API_URL}/users/${userIdToFollow}/follow`, { userId: user._id });
-      alert("¡Siguiendo! 🤝");
-      // Actualizamos el usuario local para que el chat sepa que ahora lo seguimos
-      user.followings.push(userIdToFollow);
-      localStorage.setItem("user", JSON.stringify(user));
+      
+      // 2. Actualizar la memoria LOCAL del navegador para que el Chat se entere
+      if (!user.followings.includes(userIdToFollow)) {
+        user.followings.push(userIdToFollow);
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+      
+      alert("¡Siguiendo! 🤝 Ahora aparecerá en tu chat.");
       window.location.reload();
-    } catch (err) { alert("Ya sigues a este usuario."); }
+    } catch (err) { 
+      console.error(err);
+      alert("Ya sigues a este usuario o hubo un error."); 
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -96,11 +104,10 @@ export default function Home() {
       <div className="navbar">
         <h2>InstaClon</h2>
         
-        {/* BARRA DE BÚSQUEDA */}
         <div className="search-bar-container" style={{position: "relative"}}>
           <input 
             type="text" 
-            placeholder="🔍 Buscar usuarios..." 
+            placeholder="🔍 Buscar..." 
             className="search-input-nav"
             value={searchQuery}
             onChange={handleSearch}
@@ -121,8 +128,6 @@ export default function Home() {
 
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <button onClick={() => window.location.href = "/chat"} className="chat-btn">💬</button>
-          
-          {/* FOTO DE PERFIL CLICKEABLE */}
           <div onClick={changeProfilePic} style={{cursor: "pointer", display:"flex", alignItems:"center", gap:"5px"}} title="Clic para cambiar foto">
             <img 
               src={user.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} 
