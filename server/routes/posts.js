@@ -1,16 +1,13 @@
 const router = require("express").Router();
 const Post = require("../models/Post");
-const User = require("../models/User");
 const Notification = require("../models/Notification");
+const User = require("../models/User");
 
 // CREAR POST
 router.post("/", async (req, res) => {
   try {
     const currentUser = await User.findById(req.body.userId);
-    const newPost = new Post({
-      ...req.body,
-      userPic: currentUser.profilePic // Guardamos la foto
-    });
+    const newPost = new Post({ ...req.body, userPic: currentUser.profilePic });
     const savedPost = await newPost.save();
     res.status(200).json(savedPost);
   } catch (err) { res.status(500).json(err); }
@@ -36,7 +33,7 @@ router.delete("/:id", async (req, res) => {
   try { const post = await Post.findById(req.params.id); if (post.userId === req.body.userId) { await post.deleteOne(); res.status(200).json("Eliminado"); } else { res.status(403).json("Error"); } } catch (err) { res.status(500).json(err); }
 });
 
-// LIKE POST
+// LIKE A PUBLICACIÓN
 router.put("/:id/like", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -55,19 +52,19 @@ router.put("/:id/like", async (req, res) => {
   } catch (err) { res.status(500).json(err); }
 });
 
-// COMENTAR (Aquí se asegura de guardar la foto y el ID)
+// COMENTAR
 router.put("/:id/comment", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     const currentUser = await User.findById(req.body.userId);
     
     const comment = {
-      commentId: Math.random().toString(36).substr(2, 9), // ID ÚNICO NECESARIO PARA LIKES
+      commentId: Math.random().toString(36).substr(2, 9), // ID Vital para los likes
       userId: req.body.userId,
       username: req.body.username,
-      userPic: currentUser.profilePic, // FOTO REAL
+      userPic: currentUser.profilePic,
       text: req.body.text,
-      likes: [],
+      likes: [], // Array vacío inicial
       createdAt: new Date()
     };
     
@@ -81,20 +78,48 @@ router.put("/:id/comment", async (req, res) => {
   } catch (err) { res.status(500).json(err); }
 });
 
-// LIKE COMENTARIO
+// --- LIKE A COMENTARIO (Ruta Corregida) ---
 router.put("/:id/comment/:commentId/like", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
     const comment = post.comments.find(c => c.commentId === req.params.commentId);
+    
     if (!comment) return res.status(404).json("No existe");
 
-    if (!comment.likes.includes(req.body.userId)) { comment.likes.push(req.body.userId); } 
-    else { comment.likes = comment.likes.filter(id => id !== req.body.userId); }
+    // Aseguramos que el array exista (para comentarios viejos que se rompen)
+    if (!comment.likes) comment.likes = [];
 
-    await post.markModified('comments');
+    if (!comment.likes.includes(req.body.userId)) {
+      // 1. Dar Like
+      comment.likes.push(req.body.userId);
+
+      // 2. Notificación (Si no me doy like yo mismo)
+      if (comment.userId !== req.body.userId) {
+        const sender = await User.findById(req.body.userId);
+        const newNoti = new Notification({
+            recipientId: comment.userId, // Al dueño del comentario
+            senderId: req.body.userId,
+            senderName: sender.username,
+            type: "commentLike",         // Tipo especial
+            text: comment.text,          // Texto del comentario
+            postId: post._id
+        });
+        await newNoti.save();
+      }
+
+    } else {
+      // Quitar Like
+      comment.likes = comment.likes.filter(id => id !== req.body.userId);
+    }
+
+    await post.markModified('comments'); // ¡OBLIGATORIO!
     await post.save();
+    
     res.status(200).json(comment.likes);
-  } catch (err) { res.status(500).json(err); }
+  } catch (err) { 
+    console.error(err);
+    res.status(500).json(err); 
+  }
 });
 
 module.exports = router;
