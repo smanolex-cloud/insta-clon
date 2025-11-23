@@ -44,3 +44,36 @@
 .noti-dropdown { position: absolute; top: 35px; right: 0; width: 250px; background-color: white; border: 1px solid #dbdbdb; border-radius: 5px; box-shadow: 0px 4px 12px rgba(0,0,0,0.15); z-index: 9999; max-height: 300px; overflow-y: auto; }
 .noti-item { padding: 10px; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
 .noti-item:hover { background-color: #fafafa; }
+
+/* BADGE DE LA CAMPANA */
+.noti-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 5px;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+/* BADGE DEL CHAT (NUEVO) */
+.noti-badge-chat {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: red; /* O azul, si prefieres diferenciarlo */
+  color: white;
+  border-radius: 50%;
+  padding: 2px 5px;
+  font-size: 10px;
+  font-weight: bold;
+  z-index: 2;
+  pointer-events: none; /* Para que no bloquee el clic */
+}
+
+.chat-btn-container {
+  display: flex;
+  align-items: center;
+}
