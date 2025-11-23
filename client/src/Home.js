@@ -70,13 +70,19 @@ export default function Home() {
   };
 
   const handleChatClick = async () => { if (msgCount > 0) { try { await axios.put(`${API_URL}/notifications/read/${user._id}`, { type: "message" }); } catch (err) {} } window.location.href = "/chat"; };
-  
   const handleSearch = async (e) => { const query = e.target.value; setSearchQuery(query); if (query.length > 0) { try { const res = await axios.get(`${API_URL}/users/search/${query}`); setSearchResults(res.data); } catch (err) {} } else { setSearchResults([]); } };
   const goToProfile = (username) => { window.location.href = `/profile/${username}`; };
   const handleFollow = async (userIdToFollow) => { const isFollowing = user.followings.includes(userIdToFollow); try { if (isFollowing) { await axios.put(`${API_URL}/users/${userIdToFollow}/unfollow`, { userId: user._id }); user.followings = user.followings.filter(id => id !== userIdToFollow); } else { await axios.put(`${API_URL}/users/${userIdToFollow}/follow`, { userId: user._id }); user.followings.push(userIdToFollow); } localStorage.setItem("user", JSON.stringify(user)); window.location.reload(); } catch (err) {} };
   const handleSubmit = async (e) => { e.preventDefault(); if (!imgUrl && !desc) return; const newPost = { userId: user._id, username: user.username, desc, img: imgUrl }; try { await axios.post(`${API_URL}/posts`, newPost); window.location.reload(); } catch (err) {} };
   const handleDelete = async (postId) => { if (!window.confirm("¿Borrar?")) return; try { await axios.delete(`${API_URL}/posts/${postId}`, { data: { userId: user._id } }); window.location.reload(); } catch (err) {} };
-  const handleLogout = () => { localStorage.removeItem("user"); window.location.reload(); };
+  
+  // --- BOTÓN SALIR ---
+  const handleLogout = () => { 
+      localStorage.removeItem("user"); 
+      window.location.reload(); 
+  };
+  
+  const mobileSearch = () => { const busqueda = prompt("🔍 Buscar usuario:"); if(busqueda) { setSearchQuery(busqueda); handleSearch({target: {value: busqueda}}); } };
 
   return (
     <div className="home-container">
@@ -111,9 +117,7 @@ export default function Home() {
         {/* BUSCADOR PC */}
         <div className="search-bar-container desktop-only" style={{position: "relative"}}>
           <input type="text" placeholder="🔍 Buscar..." className="search-input-nav" value={searchQuery} onChange={handleSearch} />
-          {searchResults.length > 0 && (
-            <div className="search-results">{searchResults.map(u => {const isFollowing = user.followings.includes(u._id); return (<div key={u._id} className="search-item" onClick={() => goToProfile(u.username)}><div style={{display:"flex", alignItems:"center", gap:"10px"}}><img src={u.profilePic || DEFAULT_IMG} alt="" style={{width:"30px", height:"30px", borderRadius:"50%", objectFit:"cover"}}/><span style={{fontWeight:"bold"}}>{u.username}</span></div>{u._id !== user._id && <button className={`mini-follow-btn ${isFollowing ? "following-mode" : ""}`} onClick={(e) => { e.stopPropagation(); handleFollow(u._id); }}>{isFollowing ? "Siguiendo" : "Seguir"}</button>}</div>)})}</div>
-          )}
+          {searchResults.length > 0 && <div className="search-results">{searchResults.map(u => {const isFollowing = user.followings.includes(u._id); return (<div key={u._id} className="search-item" onClick={() => goToProfile(u.username)}><div style={{display:"flex", alignItems:"center", gap:"10px"}}><img src={u.profilePic || DEFAULT_IMG} alt="" style={{width:"30px", height:"30px", borderRadius:"50%", objectFit:"cover"}}/><span style={{fontWeight:"bold"}}>{u.username}</span></div>{u._id !== user._id && <button className={`mini-follow-btn ${isFollowing ? "following-mode" : ""}`} onClick={(e) => { e.stopPropagation(); handleFollow(u._id); }}>{isFollowing ? "Siguiendo" : "Seguir"}</button>}</div>)})}</div>}
         </div>
 
         {/* ICONOS PC */}
@@ -128,17 +132,25 @@ export default function Home() {
           <button onClick={handleLogout} className="logout-btn">Salir</button>
         </div>
 
-        {/* --- ICONOS MOVIL (ARRIBA DERECHA) --- */}
-        <div className="mobile-only" style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+        {/* --- ESTA ES LA SECCIÓN NUEVA PARA EL CELULAR --- */}
+        <div className="mobile-only" style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+            
             {/* Icono Chat */}
             <div style={{position:"relative"}}>
-                <button onClick={handleChatClick} style={{background:"transparent", border:"none", fontSize:"24px", cursor:"pointer"}}>💬</button>
+                <button onClick={handleChatClick} className="chat-btn" style={{padding:"5px 8px", fontSize:"20px"}}>💬</button>
                 {msgCount > 0 && <span className="noti-badge-chat" style={{top: "-5px", right: "-5px"}}>{msgCount}</span>}
             </div>
             
-            {/* Icono Salir (Puerta) */}
-            <button onClick={handleLogout} style={{background:"transparent", border:"none", fontSize:"24px", cursor:"pointer"}} title="Salir">🚪</button>
+            {/* Icono SALIR (Puerta) */}
+            <button 
+                onClick={handleLogout} 
+                style={{background:"transparent", border:"none", fontSize:"20px", cursor:"pointer"}}
+                title="Cerrar Sesión"
+            >
+                🚪
+            </button>
         </div>
+
       </div>
 
       <div className="main-content">
@@ -156,18 +168,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* PANEL GLOBAL NOTIS */}
-      {showNotiPanel && (
-        <div className="noti-dropdown-global">
-            <div style={{display:"flex", justifyContent:"space-between", padding:"10px", borderBottom:"1px solid #333", position: "sticky", top:0, background:"#1e1e1e"}}>
-                <span style={{fontWeight:"bold"}}>Notificaciones</span>
-                <span onClick={() => setShowNotiPanel(false)} style={{cursor:"pointer"}}>✖</span>
-            </div>
-            {notifications.filter(n => n.type !== 'message').length === 0 ? <p style={{padding:"20px", color:"gray", textAlign:"center"}}>Sin actividad reciente</p> : notifications.filter(n => n.type !== 'message').map(n => <div key={n._id} className="noti-item"><strong>{n.senderName}</strong> {n.type === 'like' && " ❤️ le dio me gusta"}{n.type === 'comment' && " 💬 comentó"}{n.type === 'follow' && " 🤝 te empezó a seguir"}{n.type === 'commentLike' && " ❤️ le gustó tu comentario"}</div>)}
-        </div>
-      )}
-
-      {/* BARRA INFERIOR MÓVIL */}
       <div className="mobile-navbar">
         <button className="mobile-nav-item" onClick={() => window.location.href="/"}>🏠</button>
         <button className="mobile-nav-item" onClick={() => setShowMobileSearch(true)}>🔍</button>
