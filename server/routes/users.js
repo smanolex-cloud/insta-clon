@@ -9,7 +9,6 @@ router.put("/:id/follow", async (req, res) => {
       const currentUser = await User.findById(req.body.userId);
       if (!userToFollow.followers.includes(req.body.userId)) {
         await userToFollow.updateOne({ $push: { followers: req.body.userId } });
-        // AQUÍ USAMOS FOLLOWINGS (Plural)
         await currentUser.updateOne({ $push: { followings: req.params.id } });
         res.status(200).json("¡Ahora sigues a este usuario!");
       } else {
@@ -46,10 +45,19 @@ router.put("/:id/update-pic", async (req, res) => {
   } else { res.status(403).json("Solo puedes actualizar tu cuenta"); }
 });
 
-// 5. OBTENER UN USUARIO (Ruta Nueva para el Chat)
+// 5. OBTENER UN USUARIO POR ID (Para el Chat)
 router.get("/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
+    const { password, updatedAt, ...other } = user._doc;
+    res.status(200).json(other);
+  } catch (err) { res.status(500).json(err); }
+});
+
+// 6. OBTENER UN USUARIO POR NOMBRE (Para el Perfil) <--- NUEVO
+router.get("/u/:username", async (req, res) => {
+  try {
+    const user = await User.findOne({ username: req.params.username });
     const { password, updatedAt, ...other } = user._doc;
     res.status(200).json(other);
   } catch (err) { res.status(500).json(err); }

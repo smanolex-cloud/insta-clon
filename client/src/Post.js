@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./Home.css"; 
 
-// 👇👇👇 PEGA TU LINK DE RENDER AQUÍ (SIN LA BARRA / AL FINAL) 👇👇👇
 const API_URL = "https://insta-clon-api.onrender.com/api"; 
 
 export default function Post({ post, user, handleDelete }) {
@@ -16,7 +15,6 @@ export default function Post({ post, user, handleDelete }) {
     setIsLiked(post.likes.includes(user._id));
   }, [user._id, post.likes]);
 
-  // Like
   const likeHandler = () => {
     try {
       axios.put(`${API_URL}/posts/${post._id}/like`, { userId: user._id });
@@ -25,7 +23,6 @@ export default function Post({ post, user, handleDelete }) {
     setIsLiked(!isLiked);
   };
 
-  // Comentar
   const submitComment = async (e) => {
     e.preventDefault();
     if (!commentText) return;
@@ -43,7 +40,14 @@ export default function Post({ post, user, handleDelete }) {
   return (
     <div className="post">
       <div className="post-header">
-        <span className="post-username">{post.username}</span>
+        {/* ENLACE AL PERFIL AQUÍ */}
+        <span 
+          className="post-username" 
+          onClick={() => window.location.href=`/profile/${post.username}`}
+          style={{cursor: "pointer"}}
+        >
+          {post.username}
+        </span>
         <span className="post-date">{new Date(post.createdAt).toDateString()}</span>
       </div>
       
@@ -54,16 +58,12 @@ export default function Post({ post, user, handleDelete }) {
 
       <div className="post-bottom">
         <div className="post-actions">
-          <span onClick={likeHandler} style={{cursor:"pointer", fontSize:"22px", marginRight:"10px"}}>
-            {isLiked ? "❤️" : "🤍"}
-          </span>
+          <span onClick={likeHandler} style={{cursor:"pointer", fontSize:"22px", marginRight:"10px"}}>{isLiked ? "❤️" : "🤍"}</span>
           <span onClick={() => setShowComments(!showComments)} style={{cursor:"pointer", fontSize:"22px"}}>💬</span>
         </div>
         <div className="post-info">
           <span>{like} Me gusta</span> • 
-          <span onClick={() => setShowComments(!showComments)} style={{cursor:"pointer", marginLeft:"5px"}}>
-            {comments.length} comentarios
-          </span>
+          <span onClick={() => setShowComments(!showComments)} style={{cursor:"pointer", marginLeft:"5px"}}>{comments.length} comentarios</span>
         </div>
       </div>
 
@@ -81,9 +81,7 @@ export default function Post({ post, user, handleDelete }) {
         </div>
       )}
 
-      {post.userId === user._id && (
-         <button className="delete-btn" onClick={() => handleDelete(post._id)}>🗑️ Borrar</button>
-      )}
+      {post.userId === user._id && <button className="delete-btn" onClick={() => handleDelete(post._id)}>🗑️ Borrar</button>}
     </div>
   );
 }

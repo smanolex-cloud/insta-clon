@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const Post = require("../models/Post");
 
-// 1. CREAR POST
+// CREAR
 router.post("/", async (req, res) => {
   const newPost = new Post(req.body);
   try {
@@ -10,7 +10,7 @@ router.post("/", async (req, res) => {
   } catch (err) { res.status(500).json(err); }
 });
 
-// 2. OBTENER TODOS (FEED)
+// OBTENER TODOS (FEED)
 router.get("/timeline/all", async (req, res) => {
   try {
     const posts = await Post.find().sort({ createdAt: -1 });
@@ -18,7 +18,15 @@ router.get("/timeline/all", async (req, res) => {
   } catch (err) { res.status(500).json(err); }
 });
 
-// 3. BORRAR POST
+// OBTENER POSTS DE PERFIL (NUEVO)
+router.get("/profile/:username", async (req, res) => {
+  try {
+    const posts = await Post.find({ username: req.params.username }).sort({ createdAt: -1 });
+    res.status(200).json(posts);
+  } catch (err) { res.status(500).json(err); }
+});
+
+// BORRAR
 router.delete("/:id", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -29,7 +37,7 @@ router.delete("/:id", async (req, res) => {
   } catch (err) { res.status(500).json(err); }
 });
 
-// 4. DAR / QUITAR LIKE (NUEVO)
+// LIKE
 router.put("/:id/like", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
@@ -43,7 +51,7 @@ router.put("/:id/like", async (req, res) => {
   } catch (err) { res.status(500).json(err); }
 });
 
-// 5. COMENTAR (NUEVO)
+// COMENTAR
 router.put("/:id/comment", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
