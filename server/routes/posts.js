@@ -1,8 +1,7 @@
 const router = require("express").Router();
 const Post = require("../models/Post");
-const Notification = require("../models/Notification");
 const User = require("../models/User");
-const { v4: uuidv4 } = require('uuid');
+const Notification = require("../models/Notification");
 
 // CREAR POST
 router.post("/", async (req, res) => {
@@ -10,30 +9,26 @@ router.post("/", async (req, res) => {
     const currentUser = await User.findById(req.body.userId);
     const newPost = new Post({
       ...req.body,
-      userPic: currentUser.profilePic // Guardamos la foto del autor
+      userPic: currentUser.profilePic // Guardamos la foto
     });
     const savedPost = await newPost.save();
     res.status(200).json(savedPost);
   } catch (err) { res.status(500).json(err); }
 });
 
-// OBTENER TIMELINE
+// TIMELINE
 router.get("/timeline/all", async (req, res) => {
   try { const posts = await Post.find().sort({ createdAt: -1 }); res.status(200).json(posts); } catch (err) { res.status(500).json(err); }
 });
 
-// OBTENER PERFIL
+// PERFIL
 router.get("/profile/:username", async (req, res) => {
   try { const posts = await Post.find({ username: req.params.username }).sort({ createdAt: -1 }); res.status(200).json(posts); } catch (err) { res.status(500).json(err); }
 });
 
-// BUSCAR POR TAG
+// TAG
 router.get("/tag/:tag", async (req, res) => {
-  try {
-    const tag = "#" + req.params.tag;
-    const posts = await Post.find({ desc: { $regex: tag, $options: "i" } }).sort({ createdAt: -1 });
-    res.status(200).json(posts);
-  } catch (err) { res.status(500).json(err); }
+  try { const tag = "#" + req.params.tag; const posts = await Post.find({ desc: { $regex: tag, $options: "i" } }).sort({ createdAt: -1 }); res.status(200).json(posts); } catch (err) { res.status(500).json(err); }
 });
 
 // BORRAR
@@ -60,19 +55,17 @@ router.put("/:id/like", async (req, res) => {
   } catch (err) { res.status(500).json(err); }
 });
 
-// --- COMENTAR (FIX: Asegurar foto de perfil) ---
+// COMENTAR (Aquí se asegura de guardar la foto y el ID)
 router.put("/:id/comment", async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    
-    // 1. Buscamos al usuario ACTUAL para obtener su foto más reciente
     const currentUser = await User.findById(req.body.userId);
-
+    
     const comment = {
-      commentId: Math.random().toString(36).substr(2, 9),
+      commentId: Math.random().toString(36).substr(2, 9), // ID ÚNICO NECESARIO PARA LIKES
       userId: req.body.userId,
       username: req.body.username,
-      userPic: currentUser.profilePic, // <--- AQUÍ GUARDAMOS LA FOTO REAL
+      userPic: currentUser.profilePic, // FOTO REAL
       text: req.body.text,
       likes: [],
       createdAt: new Date()
@@ -84,8 +77,6 @@ router.put("/:id/comment", async (req, res) => {
         const newNoti = new Notification({ recipientId: post.userId, senderId: req.body.userId, senderName: req.body.username, type: "comment", text: req.body.text, postId: post._id });
         await newNoti.save();
     }
-    
-    // Devolvemos el comentario completo para que el frontend lo pinte
     res.status(200).json(comment);
   } catch (err) { res.status(500).json(err); }
 });

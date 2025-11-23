@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./Home.css"; 
 
+// TU LINK DE RENDER
 const API_URL = "https://insta-clon-api.onrender.com/api"; 
-const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/149/149071.png"; // Avatar
+
+// IMAGEN POR DEFECTO (Esto faltaba aquí)
+const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
 export default function Post({ post, user, handleDelete }) {
   const [like, setLike] = useState(post.likes.length);
@@ -11,6 +14,7 @@ export default function Post({ post, user, handleDelete }) {
   const [comments, setComments] = useState(post.comments);
   const [commentText, setCommentText] = useState("");
   const [showComments, setShowComments] = useState(false);
+  
   const [showHeartOverlay, setShowHeartOverlay] = useState(false);
 
   useEffect(() => {
@@ -18,7 +22,9 @@ export default function Post({ post, user, handleDelete }) {
   }, [user._id, post.likes]);
 
   const likeHandler = () => {
-    try { axios.put(`${API_URL}/posts/${post._id}/like`, { userId: user._id }); } catch (err) {}
+    try {
+      axios.put(`${API_URL}/posts/${post._id}/like`, { userId: user._id });
+    } catch (err) {}
     setLike(isLiked ? like - 1 : like + 1);
     setIsLiked(!isLiked);
   };
@@ -29,6 +35,7 @@ export default function Post({ post, user, handleDelete }) {
     if (!isLiked) likeHandler();
   };
 
+  // --- ENVIAR COMENTARIO ---
   const submitComment = async (e) => {
     e.preventDefault();
     if (!commentText) return;
@@ -38,24 +45,38 @@ export default function Post({ post, user, handleDelete }) {
         username: user.username,
         text: commentText
       });
+      // Agregamos el nuevo comentario a la lista
       setComments([...comments, res.data]);
       setCommentText("");
     } catch (err) { console.log(err); }
   };
 
+  // --- DAR LIKE A COMENTARIO ---
   const likeComment = async (commentId) => {
+    // Si es un comentario viejo sin ID, no hacemos nada
+    if (!commentId) return alert("Este comentario es antiguo y no soporta likes.");
+
     try {
-        const res = await axios.put(`${API_URL}/posts/${post._id}/comment/${commentId}/like`, { userId: user._id });
+        const res = await axios.put(`${API_URL}/posts/${post._id}/comment/${commentId}/like`, {
+            userId: user._id
+        });
+        
+        // Actualizamos la lista localmente
         const updatedComments = comments.map(c => {
-            if(c.commentId === commentId) { return { ...c, likes: res.data }; }
+            if(c.commentId === commentId) {
+                return { ...c, likes: res.data }; 
+            }
             return c;
         });
         setComments(updatedComments);
     } catch(err) { console.log(err); }
   };
 
-  const replyToComment = (username) => { setCommentText(`@${username} `); };
+  const replyToComment = (username) => {
+    setCommentText(`@${username} `);
+  };
 
+  // Formato de texto (Hashtags y Menciones)
   const formatText = (text) => {
     if (!text) return "";
     return text.split(" ").map((word, i) => {
@@ -73,11 +94,11 @@ export default function Post({ post, user, handleDelete }) {
 
   return (
     <div className="post">
-      {/* CABECERA DEL POST (CON FOTO) */}
       <div className="post-header">
         <div style={{display:"flex", alignItems:"center", gap:"10px"}}>
+            {/* FOTO DEL AUTOR DEL POST */}
             <img 
-                src={post.userPic || DEFAULT_IMG} // <--- AQUÍ ESTÁ LA CORRECCIÓN
+                src={post.userPic || DEFAULT_IMG} 
                 alt="" 
                 style={{width:"35px", height:"35px", borderRadius:"50%", objectFit:"cover", cursor:"pointer", border: "1px solid #333"}}
                 onClick={() => window.location.href=`/profile/${post.username}`}
@@ -96,14 +117,21 @@ export default function Post({ post, user, handleDelete }) {
 
       <div className="post-bottom">
         <div className="post-actions">
-          <span onClick={likeHandler} style={{cursor:"pointer", fontSize:"24px", marginRight:"15px"}}>{isLiked ? "❤️" : "🤍"}</span>
+          <span onClick={likeHandler} style={{cursor:"pointer", fontSize:"24px", marginRight:"15px"}}>
+            {isLiked ? "❤️" : "🤍"}
+          </span>
           <span onClick={() => setShowComments(!showComments)} style={{cursor:"pointer", fontSize:"24px"}}>💬</span>
         </div>
         
         <div className="post-info">
           <span style={{fontWeight:"bold", display:"block", marginBottom:"5px"}}>{like} Me gusta</span>
-          <span className="post-desc"><span style={{fontWeight:"bold", marginRight:"5px"}}>{post.username}</span>{formatText(post.desc)}</span>
-          <p onClick={() => setShowComments(!showComments)} style={{cursor:"pointer", color:"#a0a0a0", fontSize:"13px", marginTop:"5px"}}>Ver los {comments.length} comentarios</p>
+          <span className="post-desc">
+            <span style={{fontWeight:"bold", marginRight:"5px"}}>{post.username}</span>
+            {formatText(post.desc)}
+          </span>
+          <p onClick={() => setShowComments(!showComments)} style={{cursor:"pointer", color:"#a0a0a0", fontSize:"13px", marginTop:"5px"}}>
+            Ver los {comments.length} comentarios
+          </p>
         </div>
       </div>
 
@@ -112,21 +140,37 @@ export default function Post({ post, user, handleDelete }) {
           <div className="comments-list">
             {comments.map((c, i) => (
               <div key={i} className="comment-item-row">
-                {/* FOTO EN COMENTARIO */}
+                
+                {/* FOTO DEL COMENTARIO (Con Corrección) */}
                 <img 
-                    src={c.userPic || DEFAULT_IMG} // <--- CORRECCIÓN AQUÍ TAMBIÉN
+                    src={c.userPic || DEFAULT_IMG} 
                     alt="" 
                     style={{width:"25px", height:"25px", borderRadius:"50%", objectFit:"cover", marginRight:"10px", border: "1px solid #333"}} 
                 />
+                
                 <div style={{flex:1}}>
-                    <span style={{fontWeight:"bold", color:"white", fontSize:"13px", cursor:"pointer"}} onClick={() => window.location.href=`/profile/${c.username}`}>{c.username} </span> 
-                    <span style={{fontSize:"13px", marginLeft: "5px"}}>{formatText(c.text)}</span>
+                    <span style={{fontWeight:"bold", color:"white", fontSize:"13px", cursor:"pointer"}} onClick={() => window.location.href=`/profile/${c.username}`}>
+                        {c.username} 
+                    </span> 
+                    <span style={{fontSize:"13px", marginLeft: "5px"}}>
+                        {formatText(c.text)}
+                    </span>
+                    
                     <div style={{display:"flex", gap:"15px", marginTop:"2px", alignItems:"center"}}>
                         <span style={{fontSize:"10px", color:"#a0a0a0", cursor:"pointer"}} onClick={() => replyToComment(c.username)}>Responder</span>
-                        {c.likes && c.likes.length > 0 && <span style={{fontSize:"10px", color:"#a0a0a0"}}>{c.likes.length} likes</span>}
+                        {c.likes && c.likes.length > 0 && (
+                            <span style={{fontSize:"10px", color:"#a0a0a0"}}>{c.likes.length} likes</span>
+                        )}
                     </div>
                 </div>
-                <span onClick={() => likeComment(c.commentId)} style={{cursor:"pointer", fontSize:"12px", marginLeft:"5px"}}>{c.likes && c.likes.includes(user._id) ? "❤️" : "🤍"}</span>
+
+                {/* LIKE COMENTARIO */}
+                <span 
+                    onClick={() => likeComment(c.commentId)} 
+                    style={{cursor:"pointer", fontSize:"12px", marginLeft:"5px"}}
+                >
+                    {c.likes && c.likes.includes(user._id) ? "❤️" : "🤍"}
+                </span>
               </div>
             ))}
           </div>
