@@ -121,3 +121,41 @@
 .noti-item { padding: 10px; border-bottom: 1px solid #333333; font-size: 13px; color: #e0e0e0; }
 .noti-item:hover { background-color: #2a2a2a; }
 .chat-btn-container { display: flex; align-items: center; }
+
+/* === NUEVO: ANIMACIÓN DE DOBLE TAP === */
+.post-img-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.heart-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0); /* Empieza invisible y pequeño */
+  font-size: 100px; /* Corazón gigante */
+  color: white; /* O rojo, como prefieras */
+  pointer-events: none; /* Para que el clic pase a través */
+  opacity: 0;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  text-shadow: 0 0 20px rgba(0,0,0,0.5); /* Sombra para que se vea bien */
+}
+
+.heart-overlay.animate {
+  transform: translate(-50%, -50%) scale(1.5);
+  opacity: 1;
+  animation: fadeOutHeart 0.8s forwards;
+}
+
+@keyframes fadeOutHeart {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+  20% { transform: translate(-50%, -50%) scale(1.5); } /* Rebote */
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+}
+
+/* Ajuste de descripción */
+.post-desc {
+  font-size: 14px;
+  line-height: 1.4;
+  display: block;
+}
