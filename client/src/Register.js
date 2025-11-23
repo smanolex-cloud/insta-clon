@@ -10,16 +10,22 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // URL CORRECTA Y FINAL
       const res = await axios.post("https://insta-clon-api.onrender.com/api/auth/register", {
         username,
         email,
         password,
       });
-      alert("¡Cuenta creada con éxito! 🎉");
-      console.log(res.data); // Esto ayuda a ver si llegó la respuesta
+      
+      // LÓGICA DE ÉXITO FINAL: Guarda sesión y recarga.
+      alert("¡Cuenta creada con éxito! 🎉 Iniciando sesión...");
+      localStorage.setItem("user", JSON.stringify(res.data)); 
+      window.location.reload(); 
+      
     } catch (err) {
       console.error(err);
-      alert("Error al registrarse. Revisa si el servidor (puerto 5000) está encendido.");
+      // MENSAJE DE ERROR CORREGIDO: Ya no menciona el puerto 5000
+      alert("Error al registrarse. Intenta de nuevo."); 
     }
   };
 
