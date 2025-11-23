@@ -4,12 +4,14 @@
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color: #e0e0e0;
+  width: 100%;
+  overflow-x: hidden; /* Evita scroll lateral accidental */
 }
 
 /* === BARRA DE NAVEGACIÓN SUPERIOR === */
 .navbar {
   background-color: #1e1e1e;
-  padding: 10px 20px;
+  padding: 0 15px;
   border-bottom: 1px solid #333333;
   display: flex;
   justify-content: space-between;
@@ -18,6 +20,8 @@
   top: 0;
   z-index: 100;
   height: 60px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .navbar h2 {
@@ -74,11 +78,31 @@
 .logout-btn { background: #1e1e1e; color: #ff5252; border: 1px solid #333333; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
 .chat-btn-container { display: flex; align-items: center; }
 
-/* ESTRUCTURA */
-.main-content { display: flex; justify-content: center; padding-top: 30px; gap: 30px; }
-.feed-container { flex: 5; max-width: 600px; }
-.rightbar { flex: 3; max-width: 300px; height: fit-content; display: none; color: #e0e0e0; }
+/* ESTRUCTURA PRINCIPAL */
+.main-content { 
+  display: flex; 
+  justify-content: center; 
+  padding-top: 20px; 
+  gap: 30px; 
+  width: 100%;
+}
+
+.feed-container { 
+  flex: 5; 
+  max-width: 600px; 
+}
+
+.rightbar { 
+  flex: 3; 
+  max-width: 300px; 
+  height: fit-content; 
+  display: none; 
+  color: #e0e0e0; 
+}
+
+/* En pantallas grandes mostramos la barra derecha */
 @media (min-width: 900px) { .rightbar { display: block; } }
+
 .user-list { list-style: none; padding: 0; }
 .user-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
 
@@ -90,6 +114,8 @@
   padding: 15px;
   margin-bottom: 20px;
   color: #e0e0e0;
+  width: 100%; /* Asegurar que ocupe el contenedor */
+  box-sizing: border-box; /* Evita que el padding rompa el ancho */
 }
 .share-top { display: flex; align-items: center; margin-bottom: 15px; }
 .profile-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 15px; border: 1px solid #333333; }
@@ -118,7 +144,7 @@
 .comment-form button:disabled { color: #555; cursor: default; }
 .delete-btn { background: transparent; border: none; color: #ff5252; cursor: pointer; margin-top: 10px; font-size: 12px; width: 100%; text-align: right; }
 
-/* NOTIFICACIONES Y ANIMACIONES */
+/* ANIMACIONES Y NOTIFICACIONES */
 .post-img-container { position: relative; overflow: hidden; }
 .heart-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 100px; color: white; pointer-events: none; opacity: 0; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-shadow: 0 0 20px rgba(0,0,0,0.5); }
 .heart-overlay.animate { transform: translate(-50%, -50%) scale(1.5); opacity: 1; animation: fadeOutHeart 0.8s forwards; }
@@ -131,22 +157,39 @@
 .noti-item:hover { background-color: #2a2a2a; }
 
 /* =========================================
-   MODO MÓVIL: BARRA INFERIOR TIPO APP
+   MODO MÓVIL (Arreglo del diseño feo)
    ========================================= */
 
-/* Por defecto, la barra móvil NO existe (PC) */
-.mobile-navbar { display: none; } 
+.mobile-navbar { display: none; } /* Oculta en PC */
 
-/* Cuando la pantalla es de celular (max 768px) */
 @media (max-width: 768px) {
   
-  /* 1. Ocultamos elementos de la barra superior para limpiar */
+  /* 1. OCULTAR LO QUE ESTORBA ARRIBA */
   .desktop-only { display: none !important; }
   
-  /* 2. Ajustamos el contenedor para que la barra de abajo no tape nada */
-  .home-container { padding-bottom: 70px; }
+  /* 2. ARREGLAR EL ANCHO (QUITA EL ESPACIO NEGRO) */
+  .main-content {
+    display: block; /* Ya no es flex, para que ocupe todo */
+    width: 100%;
+    padding-top: 10px;
+  }
 
-  /* 3. MOSTRAMOS LA BARRA INFERIOR */
+  .feed-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding-bottom: 80px; /* Espacio para la barra de abajo */
+  }
+
+  .rightbar { display: none !important; }
+
+  /* 3. AJUSTAR BARRA SUPERIOR */
+  .navbar {
+    justify-content: space-between; /* Logo izquierda, Salir derecha */
+    padding: 0 15px;
+  }
+
+  /* 4. MOSTRAR BARRA INFERIOR */
   .mobile-navbar {
     display: flex;
     justify-content: space-around;
@@ -159,10 +202,9 @@
     background-color: #1e1e1e;
     border-top: 1px solid #333;
     z-index: 1000;
-    padding-bottom: 5px; /* Espacio para barras de iPhone */
+    padding-bottom: env(safe-area-inset-bottom); /* Para iPhone X+ */
   }
 
-  /* Iconos de la barra móvil */
   .mobile-nav-item {
     font-size: 26px;
     color: #e0e0e0;
@@ -173,23 +215,21 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    position: relative;
   }
 
   .mobile-nav-item:active { color: #8e24aa; transform: scale(0.9); }
 
-  /* Botón central "Subir" más grande y destacado */
+  /* Botón central "Subir" más grande */
   .add-btn-mobile {
-    font-size: 32px;
+    font-size: 30px;
     background-color: #2a2a2a;
-    width: 50px;
-    height: 50px;
-    border-radius: 15px;
+    width: 45px;
+    height: 45px;
+    border-radius: 12px;
     border: 1px solid #444;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-bottom: 5px;
   }
 
   .mobile-profile-img {
@@ -202,13 +242,13 @@
   
   .mobile-noti-badge {
     position: absolute;
-    top: -5px;
-    right: -5px;
+    top: -2px;
+    right: -2px;
     background-color: red;
     color: white;
-    font-size: 10px;
-    padding: 2px 5px;
+    font-size: 9px;
+    padding: 2px 4px;
     border-radius: 50%;
-    border: 1px solid #1e1e1e;
+    border: 2px solid #1e1e1e;
   }
 }
