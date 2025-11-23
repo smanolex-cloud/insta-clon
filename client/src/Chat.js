@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./Chat.css";
 
-// URL DE RENDER
+// TU LINK DE RENDER
 const API_URL = "https://insta-clon-api.onrender.com/api";
 
 export default function Chat() {
@@ -11,45 +11,53 @@ export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const localUser = JSON.parse(localStorage.getItem("user"));
   const scrollRef = useRef();
 
-  // CARGAR AMIGOS (FILTRO: SOLO A LOS QUE SIGO)
+  // 1. CARGAR AMIGOS (LÓGICA BLINDADA)
   useEffect(() => {
     const getFriends = async () => {
       try {
-        const res = await axios.get(`${API_URL}/users/all/everybody`);
+        // PASO A: Pedir mis datos frescos a la base de datos (no usamamos memoria local)
+        const myProfileRes = await axios.get(`${API_URL}/users/${localUser._id}`);
         
-        // Si no tengo lista de seguidos, inicio vacía
-        const myFollowings = user.followings || [];
+        // Aquí obtenemos la lista REAL de a quiénes sigo
+        const myFreshFollowings = myProfileRes.data.followings || []; 
+
+        // PASO B: Pedir la lista de todos los usuarios del mundo
+        const allUsersRes = await axios.get(`${API_URL}/users/all/everybody`);
         
-        // Filtramos: Solo muestro usuarios cuyo ID esté en mi lista de followings
-        const onlyFriends = res.data.filter((f) => myFollowings.includes(f._id));
+        // PASO C: Filtrar (Cruzar las listas)
+        const onlyFriends = allUsersRes.data.filter((f) => myFreshFollowings.includes(f._id));
         
         setFriends(onlyFriends);
-      } catch (err) { console.log(err); }
+      } catch (err) {
+        console.log("Error cargando amigos:", err);
+      }
     };
-    getFriends();
-  }, [user._id, user.followings]);
+    if (localUser) {
+      getFriends();
+    }
+  }, [localUser._id]);
 
-  // CARGAR MENSAJES
+  // 2. CARGAR MENSAJES
   useEffect(() => {
     const getMessages = async () => {
       if (currentChatUser) {
         try {
-          const res = await axios.get(`${API_URL}/messages/${user._id}/${currentChatUser._id}`);
+          const res = await axios.get(`${API_URL}/messages/${localUser._id}/${currentChatUser._id}`);
           setMessages(res.data);
         } catch (err) { console.log(err); }
       }
     };
     getMessages();
-  }, [currentChatUser, user._id]);
+  }, [currentChatUser, localUser._id]);
 
-  // ENVIAR
+  // 3. ENVIAR MENSAJE
   const handleSubmit = async (e) => {
     e.preventDefault();
     const message = {
-      senderId: user._id,
+      senderId: localUser._id,
       receiverId: currentChatUser._id,
       text: newMessage,
     };
@@ -69,14 +77,19 @@ export default function Chat() {
       <div className="chatMenu">
         <div className="chatMenuWrapper">
           <h3>💬 Mis Amigos</h3>
-          {friends.length === 0 && <p style={{padding:"10px", color:"gray"}}>No sigues a nadie aún. Ve al inicio y sigue a alguien para chatear.</p>}
-          
-          {friends.map((friend) => (
-            <div key={friend._id} className="conversation" onClick={() => setCurrentChatUser(friend)}>
-              <img className="conversationImg" src={friend.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" />
-              <span className="conversationName">{friend.username}</span>
+          {friends.length === 0 ? (
+            <div style={{padding:"20px", color:"gray", textAlign:"center"}}>
+              <p>No aparece nadie...</p>
+              <p style={{fontSize:"12px"}}>Ve al inicio y sigue a alguien nuevo.</p>
             </div>
-          ))}
+          ) : (
+            friends.map((friend) => (
+              <div key={friend._id} className="conversation" onClick={() => setCurrentChatUser(friend)}>
+                <img className="conversationImg" src={friend.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" />
+                <span className="conversationName">{friend.username}</span>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
@@ -85,13 +98,16 @@ export default function Chat() {
           {currentChatUser ? (
             <>
               <div className="chatBoxTop">
-                <div className="chatHeader">Hablando con: <b>{currentChatUser.username}</b></div>
+                <div className="chatHeader">
+                  <img src={currentChatUser.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" style={{width:"30px", borderRadius:"50%", verticalAlign:"middle", marginRight:"10px"}}/>
+                  Hablando con: <b>{currentChatUser.username}</b>
+                </div>
                 {messages.map((m) => (
-                  <div key={m._id} ref={scrollRef} className={m.senderId === user._id ? "message own" : "message"}>
+                  <div key={m._id} ref={scrollRef} className={m.senderId === localUser._id ? "message own" : "message"}>
                     <div className="messageTop">
                       <p className="messageText">{m.text}</p>
                     </div>
-                    <div className="messageBottom">{new Date(m.createdAt).toLocaleTimeString()}</div>
+                    <div className="messageBottom">{new Date(m.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
                   </div>
                 ))}
               </div>

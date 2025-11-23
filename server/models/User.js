@@ -6,7 +6,7 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   profilePic: { type: String, default: "" },
   followers: { type: Array, default: [] }, 
-  followings: { type: Array, default: [] }, // <--- IMPORTANTE: PLURAL
+  followings: { type: Array, default: [] }, // <--- ESTO DEBE SER PLURAL
   isAdmin: { type: Boolean, default: false },
 }, { timestamps: true });
 
