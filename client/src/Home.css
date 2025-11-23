@@ -1,11 +1,12 @@
-/* FONDO PRINCIPAL OSCURO */
+/* === CONTENEDOR PRINCIPAL === */
 .home-container {
   background-color: #121212;
   min-height: 100vh;
-  color: #e0e0e0; /* Texto claro general */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #e0e0e0;
 }
 
-/* BARRA SUPERIOR OSCURA */
+/* === BARRA DE NAVEGACIÓN (NAVBAR) === */
 .navbar {
   background-color: #1e1e1e;
   padding: 10px 20px;
@@ -23,7 +24,7 @@
   margin: 0;
   font-family: cursive;
   font-size: 24px;
-  color: #ffffff; /* Logo blanco */
+  color: #ffffff;
 }
 
 /* BUSCADOR */
@@ -32,19 +33,19 @@
   padding: 8px 15px;
   border-radius: 8px;
   border: 1px solid #333333;
-  background-color: #2a2a2a; /* Input oscuro */
+  background-color: #2a2a2a;
   color: #e0e0e0;
   outline: none;
   width: 250px;
 }
 
-/* RESULTADOS DE BÚSQUEDA OSCUROS */
+/* RESULTADOS BÚSQUEDA */
 .search-results {
   position: absolute;
   top: 45px;
   left: 0;
   width: 300px;
-  background-color: #1e1e1e; /* Fondo oscuro */
+  background-color: #1e1e1e;
   border: 1px solid #333333;
   border-radius: 5px;
   box-shadow: 0px 4px 12px rgba(0,0,0,0.5);
@@ -63,7 +64,7 @@
 }
 .search-item:hover { background-color: #2a2a2a; }
 
-/* BOTONES MORADOS */
+/* BOTONES SEGUIR */
 .mini-follow-btn { background: #8e24aa; color: white; border: none; border-radius: 4px; padding: 4px 10px; cursor: pointer; font-size: 12px; font-weight: bold; min-width: 80px; }
 .follow-btn { background-color: transparent; color: #ba68c8; border: none; padding: 0; cursor: pointer; font-weight: bold; font-size: 12px; }
 .mini-follow-btn.following-mode, .follow-btn.following-mode { background-color: #333333 !important; color: #a0a0a0 !important; cursor: default; border: 1px solid #444; padding: 4px 10px; border-radius: 4px; text-decoration: none; }
@@ -72,6 +73,7 @@
 .chat-btn { padding: 5px 10px; background: #1e1e1e; color: #e0e0e0; border: 1px solid #333333; border-radius: 5px; cursor: pointer; font-size: 18px; }
 .chat-btn:hover { background: #2a2a2a; }
 .logout-btn { background: #1e1e1e; color: #ff5252; border: 1px solid #333333; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
+.chat-btn-container { display: flex; align-items: center; }
 
 /* ESTRUCTURA */
 .main-content { display: flex; justify-content: center; padding-top: 30px; gap: 30px; }
@@ -81,9 +83,9 @@
 .user-list { list-style: none; padding: 0; }
 .user-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
 
-/* CAJAS (PUBLICAR Y POSTS) OSCURAS */
+/* CAJAS (PUBLICAR Y POSTS) */
 .share-box, .post {
-  background-color: #1e1e1e; /* Fondo tarjeta oscuro */
+  background-color: #1e1e1e;
   border-radius: 8px;
   border: 1px solid #333333;
   padding: 15px;
@@ -96,66 +98,73 @@
 .share-bottom { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #333333; padding-top: 10px; }
 .url-input { border: 1px solid #333333; padding: 8px; border-radius: 20px; width: 70%; background: #2a2a2a; color: #e0e0e0; outline: none; }
 .share-btn { background-color: #8e24aa; color: white; border: none; padding: 6px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+.file-upload-btn { background-color: #2a2a2a; color: #e0e0e0; padding: 5px 10px; border-radius: 5px; border: 1px solid #333; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 5px; }
 
 .post-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; }
 .post-username { font-weight: bold; font-size: 14px; cursor: pointer; color: #ffffff; }
 .post-date { font-size: 12px; color: #a0a0a0; }
 .post-text { display: block; padding: 0 15px 10px 15px; font-size: 14px; }
+/* Arreglo de imágenes */
 .post-img { width: 100% !important; height: auto !important; margin-top: 10px; object-fit: unset !important; max-height: none !important; display: block; background: #000; }
 .post-bottom { padding: 10px 15px; }
 .post-actions { display: flex; align-items: center; margin-bottom: 10px; color: #e0e0e0; }
 .post-info { font-weight: 500; margin-bottom: 10px; color: #e0e0e0; }
 
-.comments-section { border-top: 1px solid #333333; padding-top: 10px; margin-top: 10px; }
-.comments-list { max-height: 150px; overflow-y: auto; margin-bottom: 10px; }
-.comment-item { font-size: 14px; margin-bottom: 5px; color: #e0e0e0; }
-.comment-form { display: flex; gap: 5px; }
-.comment-form input { flex: 1; border: none; border-bottom: 1px solid #333333; padding: 5px; outline: none; background: transparent; color: #e0e0e0; }
-.comment-form button { border: none; background: transparent; color: #ba68c8; font-weight: bold; cursor: pointer; }
+/* === COMENTARIOS AVANZADOS (ESTILOS NUEVOS) === */
+.comments-section { 
+  border-top: 1px solid #333333; 
+  padding-top: 10px; 
+  margin-top: 10px; 
+}
+.comments-list { 
+  max-height: 200px; 
+  overflow-y: auto; 
+  margin-bottom: 10px; 
+}
+
+/* Fila de comentario individual */
+.comment-item-row {
+  display: flex;
+  align-items: flex-start; /* Alineado arriba por si el texto es largo */
+  margin-bottom: 12px;
+  padding-right: 5px;
+}
+
+.comment-form { 
+  display: flex; 
+  gap: 10px; 
+  align-items: center;
+}
+.comment-form input { 
+  flex: 1; 
+  border: none; 
+  border-radius: 20px; /* Redondeado */
+  padding: 8px 15px; 
+  outline: none; 
+  background-color: #2a2a2a; 
+  color: #e0e0e0; 
+  font-size: 14px;
+}
+.comment-form button { 
+  border: none; 
+  background: transparent; 
+  color: #ba68c8; 
+  font-weight: bold; 
+  cursor: pointer; 
+}
+.comment-form button:disabled { color: #555; cursor: default; }
+
 .delete-btn { background: transparent; border: none; color: #ff5252; cursor: pointer; margin-top: 10px; font-size: 12px; width: 100%; text-align: right; }
 
-/* NOTIFICACIONES OSCURAS */
+/* ANIMACIÓN DE DOBLE TAP */
+.post-img-container { position: relative; overflow: hidden; }
+.heart-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 100px; color: white; pointer-events: none; opacity: 0; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-shadow: 0 0 20px rgba(0,0,0,0.5); }
+.heart-overlay.animate { transform: translate(-50%, -50%) scale(1.5); opacity: 1; animation: fadeOutHeart 0.8s forwards; }
+@keyframes fadeOutHeart { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } 20% { transform: translate(-50%, -50%) scale(1.5); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0); } }
+
+/* NOTIFICACIONES */
 .noti-badge { position: absolute; top: -5px; right: -5px; background-color: #d32f2f; color: white; border-radius: 50%; padding: 2px 5px; font-size: 10px; font-weight: bold; }
 .noti-badge-chat { position: absolute; top: -5px; right: -5px; background-color: #8e24aa; color: white; border-radius: 50%; padding: 2px 5px; font-size: 10px; font-weight: bold; z-index: 2; pointer-events: none; }
 .noti-dropdown { position: absolute; top: 35px; right: 0; width: 250px; background-color: #1e1e1e; border: 1px solid #333333; border-radius: 5px; box-shadow: 0px 4px 12px rgba(0,0,0,0.5); z-index: 9999; max-height: 300px; overflow-y: auto; }
 .noti-item { padding: 10px; border-bottom: 1px solid #333333; font-size: 13px; color: #e0e0e0; }
 .noti-item:hover { background-color: #2a2a2a; }
-.chat-btn-container { display: flex; align-items: center; }
-
-/* === NUEVO: ANIMACIÓN DE DOBLE TAP === */
-.post-img-container {
-  position: relative;
-  overflow: hidden;
-}
-
-.heart-overlay {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) scale(0); /* Empieza invisible y pequeño */
-  font-size: 100px; /* Corazón gigante */
-  color: white; /* O rojo, como prefieras */
-  pointer-events: none; /* Para que el clic pase a través */
-  opacity: 0;
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  text-shadow: 0 0 20px rgba(0,0,0,0.5); /* Sombra para que se vea bien */
-}
-
-.heart-overlay.animate {
-  transform: translate(-50%, -50%) scale(1.5);
-  opacity: 1;
-  animation: fadeOutHeart 0.8s forwards;
-}
-
-@keyframes fadeOutHeart {
-  0% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
-  20% { transform: translate(-50%, -50%) scale(1.5); } /* Rebote */
-  100% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
-}
-
-/* Ajuste de descripción */
-.post-desc {
-  font-size: 14px;
-  line-height: 1.4;
-  display: block;
-}
