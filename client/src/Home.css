@@ -1,55 +1,9 @@
-/* === ESTILOS GENERALES === */
+/* ... (Estilos base iguales) ... */
 .home-container { background-color: #121212; min-height: 100vh; font-family: sans-serif; color: #e0e0e0; overflow-x: hidden; }
 .navbar { background-color: #1e1e1e; padding: 0 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; height: 60px; }
 .navbar h2 { margin: 0; font-family: cursive; font-size: 24px; color: #fff; }
 
-/* PANEL DE BÚSQUEDA MÓVIL (NUEVO) */
-.mobile-search-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #121212;
-  z-index: 2000; /* Encima de todo */
-  display: flex;
-  flex-direction: column;
-}
-
-.mobile-search-header {
-  display: flex;
-  padding: 15px;
-  border-bottom: 1px solid #333;
-  gap: 10px;
-  align-items: center;
-}
-
-.mobile-search-input {
-  flex: 1;
-  background-color: #2a2a2a;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 20px;
-  color: white;
-  outline: none;
-  font-size: 16px;
-}
-
-.mobile-search-close {
-  background: none;
-  border: none;
-  color: #ba68c8;
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.mobile-search-results {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px;
-}
-
-/* RESTO DE ESTILOS (PC) */
+/* BUSCADOR PC */
 .search-bar-container { position: relative; }
 .search-input-nav { padding: 8px 15px; border-radius: 8px; border: 1px solid #333; background-color: #2a2a2a; color: #e0e0e0; outline: none; width: 250px; }
 .search-results { position: absolute; top: 45px; left: 0; width: 300px; background-color: #1e1e1e; border: 1px solid #333; border-radius: 5px; box-shadow: 0px 4px 12px rgba(0,0,0,0.5); z-index: 9999; overflow: hidden; }
@@ -64,15 +18,59 @@
 .logout-btn { background: #1e1e1e; color: #ff5252; border: 1px solid #333; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; }
 .chat-btn-container { display: flex; align-items: center; }
 
-/* CONTENIDO */
+/* PANEL DE NOTIFICACIONES GLOBAL (NUEVO) */
+.noti-dropdown-global {
+  position: fixed;
+  z-index: 9999;
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+}
+
+/* EN PC: Flotante arriba a la derecha */
+@media (min-width: 769px) {
+  .noti-dropdown-global {
+    top: 60px;
+    right: 150px;
+    width: 300px;
+    max-height: 400px;
+    border-radius: 5px;
+  }
+}
+
+/* EN MOVIL: Panel inferior tipo hoja */
+@media (max-width: 768px) {
+  .noti-dropdown-global {
+    bottom: 60px; /* Encima de la barra de navegación */
+    left: 0;
+    width: 100%;
+    max-height: 60vh; /* 60% de la pantalla */
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    border-bottom: none;
+  }
+}
+
+.noti-item { padding: 15px; border-bottom: 1px solid #333; font-size: 14px; color: #e0e0e0; }
+.noti-item:hover { background-color: #2a2a2a; }
+.noti-badge { position: absolute; top: -5px; right: -5px; background-color: #d32f2f; color: white; border-radius: 50%; padding: 2px 5px; font-size: 10px; font-weight: bold; }
+.noti-badge-chat { position: absolute; top: -5px; right: -5px; background-color: #8e24aa; color: white; border-radius: 50%; padding: 2px 5px; font-size: 10px; font-weight: bold; z-index: 2; pointer-events: none; }
+
+/* PANEL BUSQUEDA MOVIL */
+.mobile-search-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #121212; z-index: 2000; display: flex; flex-direction: column; }
+.mobile-search-header { display: flex; padding: 15px; border-bottom: 1px solid #333; gap: 10px; align-items: center; }
+.mobile-search-input { flex: 1; background-color: #2a2a2a; border: none; padding: 10px 15px; border-radius: 20px; color: white; outline: none; font-size: 16px; }
+.mobile-search-close { background: none; border: none; color: #ba68c8; font-weight: bold; font-size: 14px; }
+.mobile-search-results { flex: 1; overflow-y: auto; padding: 10px; }
+
+/* RESTO */
 .main-content { display: flex; justify-content: center; padding-top: 20px; gap: 30px; width: 100%; }
 .feed-container { flex: 5; max-width: 600px; }
 .rightbar { flex: 3; max-width: 300px; height: fit-content; display: none; color: #e0e0e0; }
 @media (min-width: 900px) { .rightbar { display: block; } }
 .user-list { list-style: none; padding: 0; }
 .user-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-
-/* POSTS */
 .share-box, .post { background-color: #1e1e1e; border-radius: 8px; border: 1px solid #333; padding: 15px; margin-bottom: 20px; color: #e0e0e0; width: 100%; box-sizing: border-box; }
 .share-top { display: flex; align-items: center; margin-bottom: 15px; }
 .profile-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; margin-right: 15px; border: 1px solid #333; }
@@ -101,12 +99,6 @@
 .heart-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); font-size: 100px; color: white; pointer-events: none; opacity: 0; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-shadow: 0 0 20px rgba(0,0,0,0.5); }
 .heart-overlay.animate { transform: translate(-50%, -50%) scale(1.5); opacity: 1; animation: fadeOutHeart 0.8s forwards; }
 @keyframes fadeOutHeart { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } 20% { transform: translate(-50%, -50%) scale(1.5); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(0); } }
-.noti-badge { position: absolute; top: -5px; right: -5px; background-color: #d32f2f; color: white; border-radius: 50%; padding: 2px 5px; font-size: 10px; font-weight: bold; }
-.noti-badge-chat { position: absolute; top: -5px; right: -5px; background-color: #8e24aa; color: white; border-radius: 50%; padding: 2px 5px; font-size: 10px; font-weight: bold; z-index: 2; pointer-events: none; }
-.noti-dropdown { position: absolute; top: 35px; right: 0; width: 250px; background-color: #1e1e1e; border: 1px solid #333333; border-radius: 5px; box-shadow: 0px 4px 12px rgba(0,0,0,0.5); z-index: 9999; max-height: 300px; overflow-y: auto; }
-.noti-dropdown-global { position: fixed; bottom: 60px; left: 0; width: 100%; max-height: 50vh; background-color: #1e1e1e; border-top: 1px solid #333; z-index: 9999; overflow-y: auto; box-shadow: 0 -2px 10px rgba(0,0,0,0.5); }
-.noti-item { padding: 10px; border-bottom: 1px solid #333; font-size: 13px; color: #e0e0e0; }
-.noti-item:hover { background-color: #2a2a2a; }
 
 /* MÓVIL */
 .mobile-navbar { display: none; } 
@@ -126,5 +118,4 @@
   .add-btn-mobile { font-size: 32px; background-color: #2a2a2a; width: 45px; height: 45px; border-radius: 12px; border: 1px solid #444; display: flex; align-items: center; justify-content: center; padding-bottom: 5px; }
   .mobile-profile-img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 2px solid #e0e0e0; }
   .mobile-noti-badge { position: absolute; top: -2px; right: -2px; background-color: red; color: white; font-size: 9px; padding: 2px 4px; border-radius: 50%; border: 2px solid #1e1e1e; }
-  .noti-dropdown { display: none; } 
 }
