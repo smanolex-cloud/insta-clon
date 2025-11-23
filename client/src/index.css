@@ -1,13 +1,15 @@
 body {
   margin: 0;
+  /* Tipografía estándar del sistema, no la cambiamos */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Fondo Base Negro/Gris */
-  background-color: #121212;
-  color: #e0e0e0;
+  
+  /* --- CAMBIO CLAVE: FONDO OSCURO Y LETRAS CLARAS --- */
+  background-color: #121212 !important; /* Fondo negro casi total */
+  color: #e0e0e0 !important; /* Letras casi blancas */
 }
 
 code {
@@ -15,20 +17,8 @@ code {
     monospace;
 }
 
-/* Personalizar la barra de scroll para que sea oscura */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #121212; 
-}
-
-::-webkit-scrollbar-thumb {
-  background: #333; 
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #555; 
-}
+/* Barra de scroll oscura para que combine */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #121212; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }

@@ -3,17 +3,14 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  /* Fondo Oscuro */
-  background-color: #121212;
-  font-family: sans-serif;
+  background-color: #121212; /* Fondo oscuro */
   color: #e0e0e0;
 }
 
 .register-box {
   width: 350px;
   padding: 40px;
-  /* Tarjeta Oscura */
-  background-color: #1e1e1e;
+  background-color: #1e1e1e; /* Tarjeta oscura */
   border: 1px solid #333333;
   text-align: center;
   border-radius: 1px;
@@ -30,24 +27,19 @@
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
-  /* Inputs Oscuros */
   border: 1px solid #333333;
   border-radius: 3px;
-  background-color: #2a2a2a;
+  background-color: #2a2a2a; /* Input oscuro */
   color: #e0e0e0;
   box-sizing: border-box;
   font-size: 14px;
-}
-
-.input-field::placeholder {
-  color: #a0a0a0;
+  outline: none;
 }
 
 .register-btn {
   width: 100%;
   padding: 10px;
-  /* Botón Morado */
-  background-color: #8e24aa;
+  background-color: #8e24aa; /* Morado */
   color: white;
   border: none;
   border-radius: 5px;
@@ -55,14 +47,9 @@
   cursor: pointer;
   margin-top: 10px;
   font-size: 14px;
-  transition: background-color 0.2s;
 }
+.register-btn:hover { background-color: #ab47bc; }
 
-.register-btn:hover {
-  background-color: #ab47bc;
-}
-
-/* Link para ir al Login si ya tienes cuenta */
 .login-redirect-box {
   margin-top: 20px;
   font-size: 14px;
@@ -71,6 +58,7 @@
   padding: 20px;
   width: 350px;
   text-align: center;
+  color: #a0a0a0;
 }
 
 .login-link {
@@ -79,8 +67,4 @@
   font-weight: bold;
   cursor: pointer;
 }
-
-.login-link:hover {
-  text-decoration: underline;
-  color: #d1c4e9;
-}
+.login-link:hover { text-decoration: underline; }
