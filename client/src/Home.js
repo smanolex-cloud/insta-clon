@@ -14,10 +14,10 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const postsRes = await axios.get("http://localhost:5000/api/posts/timeline/all");
+        const postsRes = await axios.get("https://insta-clon-api.onrender.com/api/posts/timeline/all");
         setPosts(postsRes.data);
 
-        const usersRes = await axios.get("http://localhost:5000/api/users/all/everybody");
+        const usersRes = await axios.get("https://insta-clon-api.onrender.com/api/users/all/everybody");
         setUsers(usersRes.data.filter(u => u._id !== user._id)); 
       } catch (err) {
         console.error(err);
@@ -29,7 +29,7 @@ export default function Home() {
   // SEGUIR USUARIO
   const handleFollow = async (userIdToFollow) => {
     try {
-      await axios.put(`http://localhost:5000/api/users/${userIdToFollow}/follow`, {
+      await axios.put(`https://insta-clon-api.onrender.com/api/users/${userIdToFollow}/follow`, {
         userId: user._id,
       });
       alert("¡Siguiendo! 🤝");
@@ -44,7 +44,7 @@ export default function Home() {
     e.preventDefault();
     const newPost = { userId: user._id, username: user.username, desc, img };
     try {
-      await axios.post("http://localhost:5000/api/posts", newPost);
+      await axios.post("https://insta-clon-api.onrender.com/api/posts", newPost);
       window.location.reload();
     } catch (err) { console.error(err); }
   };
@@ -53,7 +53,7 @@ export default function Home() {
   const handleDelete = async (postId) => {
     if (!window.confirm("¿Borrar foto?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/posts/${postId}`, { data: { userId: user._id } });
+      await axios.delete(`https://insta-clon-api.onrender.com/api/posts/${postId}`, { data: { userId: user._id } });
       window.location.reload();
     } catch (err) { console.error(err); }
   };

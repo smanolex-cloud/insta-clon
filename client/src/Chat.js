@@ -15,7 +15,7 @@ export default function Chat() {
   useEffect(() => {
     const getFriends = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/users/all/everybody");
+        const res = await axios.get("https://insta-clon-api.onrender.com/api/users/all/everybody");
         // Filtramos para no mostrarme a mí mismo en la lista
         setFriends(res.data.filter((f) => f._id !== user._id));
       } catch (err) {
@@ -31,7 +31,7 @@ export default function Chat() {
       if (currentChatUser) {
         try {
           const res = await axios.get(
-            `http://localhost:5000/api/messages/${user._id}/${currentChatUser._id}`
+            `https://insta-clon-api.onrender.com/api/messages/${user._id}/${currentChatUser._id}`
           );
           setMessages(res.data);
         } catch (err) {
@@ -52,7 +52,7 @@ export default function Chat() {
     };
 
     try {
-      const res = await axios.post("http://localhost:5000/api/messages", message);
+      const res = await axios.post("https://insta-clon-api.onrender.com/api/messages", message);
       setMessages([...messages, res.data]); // Agregamos el mensaje a la lista visualmente
       setNewMessage(""); // Limpiamos el input
     } catch (err) {

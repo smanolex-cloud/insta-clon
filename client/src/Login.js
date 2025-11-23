@@ -10,7 +10,7 @@ export default function Login() {
     e.preventDefault();
     try {
       // 1. Enviamos los datos al servidor
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
+      const res = await axios.post("https://insta-clon-api.onrender.com/api/auth/login", {
         email,
         password,
       });
