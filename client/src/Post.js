@@ -3,6 +3,7 @@ import axios from "axios";
 import "./Home.css"; 
 
 const API_URL = "https://insta-clon-api.onrender.com/api"; 
+const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/149/149071.png"; // Avatar
 
 export default function Post({ post, user, handleDelete }) {
   const [like, setLike] = useState(post.likes.length);
@@ -37,34 +38,23 @@ export default function Post({ post, user, handleDelete }) {
         username: user.username,
         text: commentText
       });
-      // El servidor devuelve el comentario nuevo completo con foto
       setComments([...comments, res.data]);
       setCommentText("");
     } catch (err) { console.log(err); }
   };
 
-  // --- LIKE A COMENTARIO ---
   const likeComment = async (commentId) => {
     try {
-        const res = await axios.put(`${API_URL}/posts/${post._id}/comment/${commentId}/like`, {
-            userId: user._id
-        });
-        // Actualizamos la lista localmente
+        const res = await axios.put(`${API_URL}/posts/${post._id}/comment/${commentId}/like`, { userId: user._id });
         const updatedComments = comments.map(c => {
-            if(c.commentId === commentId) {
-                return { ...c, likes: res.data }; // Actualizamos los likes
-            }
+            if(c.commentId === commentId) { return { ...c, likes: res.data }; }
             return c;
         });
         setComments(updatedComments);
     } catch(err) { console.log(err); }
   };
 
-  // --- RESPONDER A COMENTARIO (Pone @usuario en el input) ---
-  const replyToComment = (username) => {
-    setCommentText(`@${username} `);
-    // Enfocar input (opcional, requiere ref)
-  };
+  const replyToComment = (username) => { setCommentText(`@${username} `); };
 
   const formatText = (text) => {
     if (!text) return "";
@@ -83,17 +73,17 @@ export default function Post({ post, user, handleDelete }) {
 
   return (
     <div className="post">
-      {/* CABECERA CON FOTO DE PERFIL */}
+      {/* CABECERA DEL POST (CON FOTO) */}
       <div className="post-header">
         <div style={{display:"flex", alignItems:"center", gap:"10px"}}>
             <img 
-                src={post.userPic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} 
+                src={post.userPic || DEFAULT_IMG} // <--- AQUÍ ESTÁ LA CORRECCIÓN
                 alt="" 
-                style={{width:"35px", height:"35px", borderRadius:"50%", objectFit:"cover", cursor:"pointer"}}
+                style={{width:"35px", height:"35px", borderRadius:"50%", objectFit:"cover", cursor:"pointer", border: "1px solid #333"}}
                 onClick={() => window.location.href=`/profile/${post.username}`}
             />
             <span className="post-username" onClick={() => window.location.href=`/profile/${post.username}`} style={{cursor: "pointer"}}>
-            {post.username}
+                {post.username}
             </span>
         </div>
         <span className="post-date">{new Date(post.createdAt).toDateString()}</span>
@@ -122,26 +112,21 @@ export default function Post({ post, user, handleDelete }) {
           <div className="comments-list">
             {comments.map((c, i) => (
               <div key={i} className="comment-item-row">
-                {/* FOTO DEL COMENTARIO */}
-                <img src={c.userPic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" style={{width:"25px", height:"25px", borderRadius:"50%", objectFit:"cover", marginRight:"10px"}} />
-                
+                {/* FOTO EN COMENTARIO */}
+                <img 
+                    src={c.userPic || DEFAULT_IMG} // <--- CORRECCIÓN AQUÍ TAMBIÉN
+                    alt="" 
+                    style={{width:"25px", height:"25px", borderRadius:"50%", objectFit:"cover", marginRight:"10px", border: "1px solid #333"}} 
+                />
                 <div style={{flex:1}}>
-                    <span style={{fontWeight:"bold", color:"white", fontSize:"13px"}}>{c.username} </span> 
-                    <span style={{fontSize:"13px"}}>{formatText(c.text)}</span>
-                    
-                    <div style={{display:"flex", gap:"10px", marginTop:"2px"}}>
-                        <span style={{fontSize:"10px", color:"gray", cursor:"pointer"}} onClick={() => replyToComment(c.username)}>Responder</span>
-                        {c.likes && c.likes.length > 0 && <span style={{fontSize:"10px", color:"#aaa"}}>{c.likes.length} likes</span>}
+                    <span style={{fontWeight:"bold", color:"white", fontSize:"13px", cursor:"pointer"}} onClick={() => window.location.href=`/profile/${c.username}`}>{c.username} </span> 
+                    <span style={{fontSize:"13px", marginLeft: "5px"}}>{formatText(c.text)}</span>
+                    <div style={{display:"flex", gap:"15px", marginTop:"2px", alignItems:"center"}}>
+                        <span style={{fontSize:"10px", color:"#a0a0a0", cursor:"pointer"}} onClick={() => replyToComment(c.username)}>Responder</span>
+                        {c.likes && c.likes.length > 0 && <span style={{fontSize:"10px", color:"#a0a0a0"}}>{c.likes.length} likes</span>}
                     </div>
                 </div>
-
-                {/* LIKE AL COMENTARIO */}
-                <span 
-                    onClick={() => likeComment(c.commentId)} 
-                    style={{cursor:"pointer", fontSize:"12px", color: c.likes && c.likes.includes(user._id) ? "red" : "gray"}}
-                >
-                    {c.likes && c.likes.includes(user._id) ? "❤️" : "🤍"}
-                </span>
+                <span onClick={() => likeComment(c.commentId)} style={{cursor:"pointer", fontSize:"12px", marginLeft:"5px"}}>{c.likes && c.likes.includes(user._id) ? "❤️" : "🤍"}</span>
               </div>
             ))}
           </div>

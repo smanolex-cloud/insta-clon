@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Post from "./Post";
-import Stories from "./Stories"; // <--- AQUÍ IMPORTAMOS LAS HISTORIAS
+import Stories from "./Stories"; 
 import "./Home.css";
 
 // TU LINK DE RENDER
@@ -10,12 +10,12 @@ const API_URL = "https://insta-clon-api.onrender.com/api";
 // TUS DATOS DE CLOUDINARY
 const CLOUD_NAME = "dbf9mqzcv"; 
 const UPLOAD_PRESET = "insta_clon"; 
+const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/149/149071.png"; // Avatar por defecto
 
 export default function Home() {
   const [posts, setPosts] = useState([]);
   const [users, setUsers] = useState([]);
   
-  // Estados para crear publicación
   const [desc, setDesc] = useState("");
   const [imgUrl, setImgUrl] = useState(""); 
   const [isUploading, setIsUploading] = useState(false); 
@@ -23,7 +23,6 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   
-  // Notificaciones
   const [notifications, setNotifications] = useState([]);
   const [bellCount, setBellCount] = useState(0);
   const [msgCount, setMsgCount] = useState(0);
@@ -31,8 +30,6 @@ export default function Home() {
 
   const user = JSON.parse(localStorage.getItem("user"));
   if (!user.followings) user.followings = [];
-
-  const profileInputRef = useRef();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,56 +43,30 @@ export default function Home() {
         const notiRes = await axios.get(`${API_URL}/notifications/${user._id}`);
         setNotifications(notiRes.data);
         
-        const unreadBell = notiRes.data.filter(n => !n.isRead && n.type !== 'message').length;
-        setBellCount(unreadBell);
-
-        const unreadMsg = notiRes.data.filter(n => !n.isRead && n.type === 'message').length;
-        setMsgCount(unreadMsg);
+        setBellCount(notiRes.data.filter(n => !n.isRead && n.type !== 'message').length);
+        setMsgCount(notiRes.data.filter(n => !n.isRead && n.type === 'message').length);
 
       } catch (err) { console.error(err); }
     };
     fetchData();
   }, [user._id]);
 
-  // --- SUBIR A CLOUDINARY ---
   const uploadImage = async (file) => {
     setIsUploading(true);
     const data = new FormData();
     data.append("file", file);
     data.append("upload_preset", UPLOAD_PRESET);
-
     try {
       const res = await axios.post(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, data);
       setIsUploading(false);
       return res.data.secure_url; 
     } catch (err) {
-      console.error(err);
       setIsUploading(false);
       alert("Error al subir imagen.");
       return null;
     }
   };
 
-  // CAMBIAR FOTO PERFIL
-  const handleProfileFileChange = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const url = await uploadImage(file);
-    if (url) {
-      try {
-        await axios.put(`${API_URL}/users/${user._id}/update-pic`, {
-          userId: user._id,
-          profilePic: url
-        });
-        const updatedUser = { ...user, profilePic: url };
-        localStorage.setItem("user", JSON.stringify(updatedUser));
-        window.location.reload();
-      } catch (err) { alert("Error guardando perfil"); }
-    }
-  };
-
-  // ELEGIR FOTO PARA POST
   const handlePostFileChange = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -104,7 +75,6 @@ export default function Home() {
     }
   };
 
-  // NOTIFICACIONES
   const handleNotiClick = async () => {
     if (!showNotiPanel && bellCount > 0) {
       try { await axios.put(`${API_URL}/notifications/read/${user._id}`, { exclude: "message" }); setBellCount(0); } catch(err) {}
@@ -143,6 +113,7 @@ export default function Home() {
     <div className="home-container">
       <div className="navbar">
         <h2>InstaClon</h2>
+        
         <div className="search-bar-container" style={{position: "relative"}}>
           <input type="text" placeholder="🔍 Buscar..." className="search-input-nav" value={searchQuery} onChange={handleSearch} />
           {searchResults.length > 0 && (
@@ -151,7 +122,11 @@ export default function Home() {
                 const isFollowing = user.followings.includes(u._id);
                 return (
                   <div key={u._id} className="search-item" onClick={() => goToProfile(u.username)}>
-                    <div style={{display:"flex", alignItems:"center", gap:"10px"}}><img src={u.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" style={{width:"30px", height:"30px", borderRadius:"50%", objectFit:"cover"}}/><span>{u.username}</span></div>
+                    <div style={{display:"flex", alignItems:"center", gap:"10px"}}>
+                        {/* FOTO EN BUSCADOR */}
+                        <img src={u.profilePic || DEFAULT_IMG} alt="" style={{width:"30px", height:"30px", borderRadius:"50%", objectFit:"cover"}}/>
+                        <span style={{fontWeight:"bold"}}>{u.username}</span>
+                    </div>
                     {u._id !== user._id && <button className={`mini-follow-btn ${user.followings.includes(u._id) ? "following-mode" : ""}`} onClick={(e) => { e.stopPropagation(); handleFollow(u._id); }}>{user.followings.includes(u._id) ? "Siguiendo" : "Seguir"}</button>}
                   </div>
                 );
@@ -172,10 +147,18 @@ export default function Home() {
             {msgCount > 0 && <span className="noti-badge-chat">{msgCount}</span>}
           </div>
 
-          <div onClick={() => profileInputRef.current.click()} style={{cursor: "pointer", display:"flex", alignItems:"center", gap:"5px"}} title="Cambiar foto">
-            <img src={user.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" style={{width:"30px", height:"30px", borderRadius:"50%", objectFit:"cover"}}/>
-            <span style={{ fontWeight: "bold" }}>{user.username}</span>
-            <input type="file" ref={profileInputRef} style={{display:"none"}} onChange={handleProfileFileChange} accept="image/*" />
+          {/* FOTO Y NOMBRE DE PERFIL (ARRIBA A LA DERECHA) - AHORA CLICKABLES */}
+          <div 
+            onClick={() => goToProfile(user.username)} 
+            style={{cursor: "pointer", display:"flex", alignItems:"center", gap:"10px"}} 
+            title="Ir a mi perfil"
+          >
+            <img 
+                src={user.profilePic || DEFAULT_IMG} 
+                alt="" 
+                style={{width:"35px", height:"35px", borderRadius:"50%", objectFit:"cover", border: "1px solid #555"}}
+            />
+            <span style={{ fontWeight: "bold", color: "#fff" }}>{user.username}</span>
           </div>
           
           <button onClick={handleLogout} className="logout-btn">Salir</button>
@@ -185,13 +168,14 @@ export default function Home() {
       <div className="main-content">
         <div className="feed-container">
           
-          {/* --- AQUÍ ESTÁN LAS HISTORIAS --- */}
           <Stories /> 
-          {/* -------------------------------- */}
 
           <div className="share-box">
-            <div className="share-top"><img src={user.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" className="profile-img" /><input placeholder={`¿Qué piensas?`} className="share-input" onChange={(e) => setDesc(e.target.value)} /></div>
-            
+            <div className="share-top">
+                {/* FOTO EN CAJA DE PUBLICAR */}
+                <img src={user.profilePic || DEFAULT_IMG} alt="" className="profile-img" />
+                <input placeholder={`¿Qué piensas?`} className="share-input" onChange={(e) => setDesc(e.target.value)} />
+            </div>
             <div className="share-bottom" style={{flexDirection:"column", alignItems:"flex-start", gap:"10px"}}>
               <div style={{display:"flex", justifyContent:"space-between", width:"100%", alignItems:"center"}}>
                 <label className="file-upload-btn">📷 Elegir Foto<input type="file" onChange={handlePostFileChange} accept="image/*" style={{display:"none"}} /></label>
@@ -210,7 +194,14 @@ export default function Home() {
             {users.map((u) => {
               const isFollowing = user.followings.includes(u._id);
               return (
-                <li key={u._id} className="user-item"><span style={{fontWeight: "bold", cursor: "pointer"}} onClick={() => goToProfile(u.username)}>{u.username}</span><button className={`follow-btn ${user.followings.includes(u._id) ? "following-mode" : ""}`} onClick={() => handleFollow(u._id)}>{user.followings.includes(u._id) ? "Siguiendo" : "Seguir"}</button></li>
+                <li key={u._id} className="user-item">
+                    <div style={{display:"flex", alignItems:"center", gap:"10px"}}>
+                        {/* FOTO EN SUGERENCIAS */}
+                        <img src={u.profilePic || DEFAULT_IMG} alt="" style={{width:"30px", height:"30px", borderRadius:"50%", objectFit:"cover"}} />
+                        <span style={{fontWeight: "bold", cursor: "pointer"}} onClick={() => goToProfile(u.username)}>{u.username}</span>
+                    </div>
+                    <button className={`follow-btn ${isFollowing ? "following-mode" : ""}`} onClick={() => handleFollow(u._id)}>{isFollowing ? "Siguiendo" : "Seguir"}</button>
+                </li>
               );
             })}
           </ul>
