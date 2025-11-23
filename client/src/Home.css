@@ -2,9 +2,10 @@
 .home-container {
   background-color: #fafafa;
   min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* === BARRA DE NAVEGACIÓN SUPERIOR === */
+/* === BARRA DE NAVEGACIÓN (NAVBAR) === */
 .navbar {
   background-color: white;
   padding: 10px 20px;
@@ -15,59 +16,127 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  height: 60px;
+}
+
+.navbar h2 {
+  margin: 0;
+  font-family: 'Grand Hotel', cursive, sans-serif; /* Si quisieras una fuente tipo logo */
+  font-size: 24px;
+}
+
+/* BUSCADOR EN LA BARRA */
+.search-bar-container {
+  position: relative;
+}
+
+.search-input-nav {
+  padding: 8px 15px;
+  border-radius: 8px;
+  border: 1px solid #dbdbdb;
+  background-color: #efefef;
+  outline: none;
+  width: 250px;
+}
+
+.search-results {
+  position: absolute;
+  top: 45px;
+  left: 0;
+  width: 250px;
+  background-color: white;
+  border: 1px solid #dbdbdb;
+  border-radius: 5px;
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
+  z-index: 10;
+  overflow: hidden;
+}
+
+.search-item {
+  padding: 10px;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.search-item:hover {
+  background-color: #fafafa;
+}
+
+.mini-follow-btn {
+  background: #0095f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* BOTONES DE LA DERECHA (Chat, Salir) */
+.chat-btn {
+  padding: 5px 10px; 
+  background: white; 
+  color: black; 
+  border: 1px solid #dbdbdb;
+  border-radius: 5px; 
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.chat-btn:hover {
+  background-color: #efefef;
 }
 
 .logout-btn {
-  background: red; 
-  color: white; 
-  border: none; 
+  background: white; 
+  color: red; 
+  border: 1px solid #dbdbdb; 
   padding: 5px 10px; 
   border-radius: 5px; 
   cursor: pointer;
+  font-weight: bold;
+  font-size: 12px;
 }
 
-/* ESTILO NUEVO: Botón de Chat */
-.chat-btn {
-  padding: 5px 10px; 
-  background: teal; 
-  color: white; 
-  border: none; 
-  border-radius: 5px; 
-  cursor: pointer;
-}
-
-/* === ESTRUCTURA DE COLUMNAS (Feed + Sugerencias) === */
+/* === ESTRUCTURA DE COLUMNAS === */
 .main-content {
   display: flex;
   justify-content: center;
-  gap: 20px; 
-  padding-top: 20px;
+  padding-top: 30px;
+  gap: 30px;
 }
 
-/* Columna Izquierda (Fotos) */
+/* COLUMNA IZQUIERDA (FEED) */
 .feed-container {
   flex: 5; 
-  max-width: 500px;
+  max-width: 600px;
 }
 
-/* Columna Derecha (A quién seguir) */
+/* COLUMNA DERECHA (SUGERENCIAS) */
 .rightbar {
   flex: 3;
   max-width: 300px;
-  background-color: white; 
   height: fit-content;
-  padding: 20px;
-  border-radius: 10px;
-  display: none; /* Se oculta en celulares */
+  display: none; /* Oculto en celular */
 }
 
-@media (min-width: 768px) {
+@media (min-width: 900px) {
   .rightbar {
     display: block;
   }
 }
 
-/* === LISTA DE USUARIOS SUGERIDOS === */
+/* === SUGERENCIAS (RIGHTBAR) === */
+.rightbar h3 {
+  font-size: 14px;
+  color: gray;
+  margin-bottom: 15px;
+}
+
 .user-list {
   list-style: none;
   padding: 0;
@@ -81,82 +150,191 @@
 }
 
 .follow-btn {
-  background-color: #0095f6;
-  color: white;
+  background-color: transparent;
+  color: #0095f6;
   border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
+  padding: 0;
   cursor: pointer;
   font-weight: bold;
+  font-size: 12px;
 }
 
-/* === CAJA DE PUBLICAR Y TARJETAS DE FOTO === */
-.share-box, .post {
+.follow-btn:hover {
+  color: #00376b;
+}
+
+/* === CAJA DE PUBLICAR (SHARE BOX) === */
+.share-box {
   background-color: white;
-  border-radius: 10px;
+  border-radius: 8px;
+  border: 1px solid #dbdbdb;
   padding: 15px;
-  box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
   margin-bottom: 20px;
 }
 
-/* Caja de Publicar */
-.share-top { display: flex; align-items: center; margin-bottom: 10px; }
-.profile-img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; object-fit: cover;}
-.share-input { width: 100%; border: none; outline: none; }
-.share-bottom { display: flex; justify-content: space-between; }
-.url-input { border: 1px solid #ddd; padding: 5px; border-radius: 5px; width: 70%; }
-.share-btn { background-color: #1877f2; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
+.share-top {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
 
-/* Estilos de la Foto */
-.post-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 10px; }
-.post-date { font-weight: normal; font-size: 12px; color: gray; }
-.post-img { width: 100%; margin-top: 10px; border-radius: 5px; object-fit: cover; }
+.profile-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 15px;
+  border: 1px solid #dbdbdb;
+}
 
-/* === NUEVOS ESTILOS: ACCIONES (Likes y Comentarios) === */
+.share-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 16px;
+}
+
+.share-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #efefef;
+  padding-top: 10px;
+}
+
+.url-input {
+  border: 1px solid #dbdbdb;
+  padding: 8px;
+  border-radius: 20px;
+  width: 70%;
+  background: #fafafa;
+  outline: none;
+}
+
+.share-btn {
+  background-color: #0095f6;
+  color: white;
+  border: none;
+  padding: 6px 15px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.share-btn:disabled {
+  background-color: #b2dffc;
+}
+
+/* === TARJETAS DE PUBLICACIÓN (POSTS) === */
+.post {
+  background-color: white;
+  border-radius: 8px;
+  border: 1px solid #dbdbdb;
+  margin-bottom: 20px;
+  padding: 0; /* Quitamos padding general para que la foto llegue al borde si quisieras */
+}
+
+.post-header {
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.post-username {
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.post-date {
+  font-size: 12px;
+  color: gray;
+}
+
+.post-center {
+  /* Contenido central */
+}
+
+.post-text {
+  display: block;
+  padding: 0 15px 10px 15px;
+  font-size: 14px;
+}
+
+.post-img {
+  width: 100%;
+  max-height: 600px;
+  object-fit: cover; /* O contain si no quieres recortar */
+  border-top: 1px solid #efefef;
+  border-bottom: 1px solid #efefef;
+}
+
+/* ACCIONES (Likes, Comentarios) */
+.post-bottom {
+  padding: 10px 15px;
+}
+
 .post-actions {
   display: flex;
   align-items: center;
-  margin-top: 10px;
-  margin-bottom: 5px;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.post-actions span {
+  transition: transform 0.1s;
+}
+
+.post-actions span:active {
+  transform: scale(1.2);
 }
 
 .post-info {
-  font-weight: 500;
+  font-weight: 600;
   font-size: 14px;
   margin-bottom: 10px;
 }
 
-/* Sección de Comentarios (Desplegable) */
+/* SECCIÓN DE COMENTARIOS */
 .comments-section {
-  border-top: 1px solid #eee;
+  border-top: 1px solid #efefef;
   padding-top: 10px;
-  margin-top: 10px;
 }
 
 .comments-list {
-  max-height: 150px; /* Si hay muchos, hace scroll */
+  max-height: 200px;
   overflow-y: auto;
   margin-bottom: 10px;
+  padding-right: 5px;
+}
+
+/* Barra de scroll fina para comentarios */
+.comments-list::-webkit-scrollbar {
+  width: 5px;
+}
+.comments-list::-webkit-scrollbar-thumb {
+  background: #dbdbdb; 
+  border-radius: 5px;
 }
 
 .comment-item {
-  font-size: 13px;
+  font-size: 14px;
   margin-bottom: 5px;
+  word-wrap: break-word;
 }
 
-/* Formulario para escribir comentario */
 .comment-form {
   display: flex;
-  gap: 5px;
+  border-top: 1px solid #efefef;
+  padding-top: 10px;
 }
 
 .comment-form input {
   flex: 1;
   border: none;
-  border-bottom: 1px solid #ccc;
-  padding: 5px;
   outline: none;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .comment-form button {
@@ -165,17 +343,21 @@
   color: #0095f6;
   font-weight: bold;
   cursor: pointer;
-  font-size: 13px;
+  opacity: 1;
 }
 
-/* Botón de Borrar Foto */
+.comment-form button:disabled {
+  opacity: 0.5;
+}
+
+/* BOTÓN BORRAR */
 .delete-btn {
-  background: transparent;
-  border: none;
-  color: red;
-  cursor: pointer;
-  margin-top: 10px;
-  font-size: 12px;
   width: 100%;
   text-align: right;
+  background: transparent;
+  border: none;
+  color: #ed4956;
+  font-size: 11px;
+  cursor: pointer;
+  margin-top: 10px;
 }

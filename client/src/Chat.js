@@ -2,47 +2,50 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./Chat.css";
 
+// URL DE RENDER
+const API_URL = "https://insta-clon-api.onrender.com/api";
+
 export default function Chat() {
-  const [friends, setFriends] = useState([]);      // Lista de usuarios para chatear
-  const [currentChatUser, setCurrentChatUser] = useState(null); // Con quién hablo ahora
-  const [messages, setMessages] = useState([]);    // Los mensajes
-  const [newMessage, setNewMessage] = useState(""); // Lo que estoy escribiendo
+  const [friends, setFriends] = useState([]);
+  const [currentChatUser, setCurrentChatUser] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState("");
 
   const user = JSON.parse(localStorage.getItem("user"));
-  const scrollRef = useRef(); // Para bajar el scroll automáticamente
+  const scrollRef = useRef();
 
-  // 1. CARGAR LISTA DE USUARIOS (Tus amigos)
+  // CARGAR AMIGOS (FILTRO: SOLO A LOS QUE SIGO)
   useEffect(() => {
     const getFriends = async () => {
       try {
-        const res = await axios.get("https://insta-clon-api.onrender.com/api/users/all/everybody");
-        // Filtramos para no mostrarme a mí mismo en la lista
-        setFriends(res.data.filter((f) => f._id !== user._id));
-      } catch (err) {
-        console.log(err);
-      }
+        const res = await axios.get(`${API_URL}/users/all/everybody`);
+        
+        // Si no tengo lista de seguidos, inicio vacía
+        const myFollowings = user.followings || [];
+        
+        // Filtramos: Solo muestro usuarios cuyo ID esté en mi lista de followings
+        const onlyFriends = res.data.filter((f) => myFollowings.includes(f._id));
+        
+        setFriends(onlyFriends);
+      } catch (err) { console.log(err); }
     };
     getFriends();
-  }, [user._id]);
+  }, [user._id, user.followings]);
 
-  // 2. CARGAR MENSAJES CUANDO ELIJO A ALGUIEN
+  // CARGAR MENSAJES
   useEffect(() => {
     const getMessages = async () => {
       if (currentChatUser) {
         try {
-          const res = await axios.get(
-            `https://insta-clon-api.onrender.com/api/messages/${user._id}/${currentChatUser._id}`
-          );
+          const res = await axios.get(`${API_URL}/messages/${user._id}/${currentChatUser._id}`);
           setMessages(res.data);
-        } catch (err) {
-          console.log(err);
-        }
+        } catch (err) { console.log(err); }
       }
     };
     getMessages();
   }, [currentChatUser, user._id]);
 
-  // 3. ENVIAR MENSAJE
+  // ENVIAR
   const handleSubmit = async (e) => {
     e.preventDefault();
     const message = {
@@ -50,33 +53,26 @@ export default function Chat() {
       receiverId: currentChatUser._id,
       text: newMessage,
     };
-
     try {
-      const res = await axios.post("https://insta-clon-api.onrender.com/api/messages", message);
-      setMessages([...messages, res.data]); // Agregamos el mensaje a la lista visualmente
-      setNewMessage(""); // Limpiamos el input
-    } catch (err) {
-      console.log(err);
-    }
+      const res = await axios.post(`${API_URL}/messages`, message);
+      setMessages([...messages, res.data]);
+      setNewMessage("");
+    } catch (err) { console.log(err); }
   };
 
-  // Autoscroll: Bajar al último mensaje siempre
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   return (
     <div className="messenger">
-      {/* MENU IZQUIERDO: AMIGOS */}
       <div className="chatMenu">
         <div className="chatMenuWrapper">
-          <h3>💬 Tus Contactos</h3>
+          <h3>💬 Mis Amigos</h3>
+          {friends.length === 0 && <p style={{padding:"10px", color:"gray"}}>No sigues a nadie aún. Ve al inicio y sigue a alguien para chatear.</p>}
+          
           {friends.map((friend) => (
-            <div 
-              key={friend._id} 
-              className="conversation" 
-              onClick={() => setCurrentChatUser(friend)}
-            >
+            <div key={friend._id} className="conversation" onClick={() => setCurrentChatUser(friend)}>
               <img className="conversationImg" src={friend.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" />
               <span className="conversationName">{friend.username}</span>
             </div>
@@ -84,7 +80,6 @@ export default function Chat() {
         </div>
       </div>
 
-      {/* CAJA DERECHA: EL CHAT */}
       <div className="chatBox">
         <div className="chatBoxWrapper">
           {currentChatUser ? (
@@ -101,22 +96,16 @@ export default function Chat() {
                 ))}
               </div>
               <div className="chatBoxBottom">
-                <textarea
-                  className="chatMessageInput"
-                  placeholder="Escribe algo..."
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  value={newMessage}
-                ></textarea>
+                <textarea className="chatMessageInput" placeholder="Escribe algo..." onChange={(e) => setNewMessage(e.target.value)} value={newMessage}></textarea>
                 <button className="chatSubmitButton" onClick={handleSubmit}>Enviar</button>
               </div>
             </>
           ) : (
-            <span className="noConversationText">Haz clic en un usuario para empezar a chatear.</span>
+            <span className="noConversationText">Elige un amigo para chatear.</span>
           )}
         </div>
       </div>
-      
-      <button className="back-btn" onClick={() => window.location.href = "/"}>⬅ Volver al Muro</button>
+      <button className="back-btn" onClick={() => window.location.href = "/"}>⬅ Volver</button>
     </div>
   );
 }
