@@ -18,6 +18,24 @@ router.put("/:id/follow", async (req, res) => {
   } else { res.status(403).json("No te puedes seguir a ti mismo"); }
 });
 
+// 1.5 DEJAR DE SEGUIR USUARIO (NUEVO)
+router.put("/:id/unfollow", async (req, res) => {
+    if (req.body.userId !== req.params.id) {
+      try {
+        const userToUnfollow = await User.findById(req.params.id);
+        const currentUser = await User.findById(req.body.userId);
+        
+        if (userToUnfollow.followers.includes(req.body.userId)) {
+          await userToUnfollow.updateOne({ $pull: { followers: req.body.userId } });
+          await currentUser.updateOne({ $pull: { followings: req.params.id } });
+          res.status(200).json("Usuario dejado de seguir");
+        } else {
+          res.status(403).json("No sigues a este usuario");
+        }
+      } catch (err) { res.status(500).json(err); }
+    } else { res.status(403).json("No puedes dejarte de seguir a ti mismo"); }
+  });
+
 // 2. OBTENER TODOS
 router.get("/all/everybody", async (req, res) => {
   try {
@@ -45,7 +63,7 @@ router.put("/:id/update-pic", async (req, res) => {
   } else { res.status(403).json("Solo puedes actualizar tu cuenta"); }
 });
 
-// 5. OBTENER UN USUARIO POR ID (Para el Chat)
+// 5. OBTENER UN USUARIO POR ID
 router.get("/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -54,7 +72,7 @@ router.get("/:id", async (req, res) => {
   } catch (err) { res.status(500).json(err); }
 });
 
-// 6. OBTENER UN USUARIO POR NOMBRE (Para el Perfil) <--- NUEVO
+// 6. OBTENER UN USUARIO POR NOMBRE
 router.get("/u/:username", async (req, res) => {
   try {
     const user = await User.findOne({ username: req.params.username });

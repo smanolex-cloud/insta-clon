@@ -64,16 +64,36 @@ export default function Home() {
     } catch (err) { alert("Error al actualizar foto"); }
   };
 
+  // --- LÓGICA NUEVA: SEGUIR Y DEJAR DE SEGUIR ---
   const handleFollow = async (userIdToFollow) => {
+    // Revisamos si ya lo estamos siguiendo
+    const isFollowing = user.followings.includes(userIdToFollow);
+
     try {
-      await axios.put(`${API_URL}/users/${userIdToFollow}/follow`, { userId: user._id });
-      if (!user.followings.includes(userIdToFollow)) {
+      if (isFollowing) {
+        // SI YA LO SIGO -> DEJAR DE SEGUIR (UNFOLLOW)
+        await axios.put(`${API_URL}/users/${userIdToFollow}/unfollow`, { userId: user._id });
+        
+        // Quitar de mi lista local
+        user.followings = user.followings.filter(id => id !== userIdToFollow);
+        alert("Dejaste de seguir al usuario.");
+      } else {
+        // SI NO LO SIGO -> SEGUIR (FOLLOW)
+        await axios.put(`${API_URL}/users/${userIdToFollow}/follow`, { userId: user._id });
+        
+        // Agregar a mi lista local
         user.followings.push(userIdToFollow);
-        localStorage.setItem("user", JSON.stringify(user));
+        alert("¡Ahora lo sigues!");
       }
-      alert("¡Siguiendo! 🤝");
+
+      // Guardar cambios en memoria y recargar para ver el botón actualizado
+      localStorage.setItem("user", JSON.stringify(user));
       window.location.reload();
-    } catch (err) { alert("Ya sigues a este usuario."); }
+
+    } catch (err) { 
+      console.error(err);
+      alert("Hubo un error al intentar seguir/dejar de seguir."); 
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -100,7 +120,6 @@ export default function Home() {
       <div className="navbar">
         <h2>InstaClon</h2>
         
-        {/* BARRA DE BÚSQUEDA */}
         <div className="search-bar-container" style={{position: "relative"}}>
           <input 
             type="text" 
@@ -110,13 +129,10 @@ export default function Home() {
             onChange={handleSearch}
           />
           
-          {/* RESULTADOS FLOTANTES */}
           {searchResults.length > 0 && (
             <div className="search-results">
               {searchResults.map(u => {
-                // Verificamos si ya lo seguimos
                 const isFollowing = user.followings.includes(u._id);
-                
                 return (
                   <div 
                     key={u._id} 
@@ -129,13 +145,12 @@ export default function Home() {
                       <span style={{fontWeight: "bold"}}>{u.username}</span>
                     </div>
                     
-                    {/* Botón Inteligente: Seguir o Siguiendo */}
                     {u._id !== user._id && (
                       <button 
                         className={`mini-follow-btn ${isFollowing ? "following-mode" : ""}`} 
                         onClick={(e) => {
                           e.stopPropagation(); 
-                          if (!isFollowing) handleFollow(u._id);
+                          handleFollow(u._id); // Ya no filtramos con !isFollowing, dejamos que la función decida
                         }}
                       >
                         {isFollowing ? "Siguiendo" : "Seguir"}
@@ -192,9 +207,10 @@ export default function Home() {
                   >
                     {u.username}
                   </span>
+                  {/* Aquí también permitimos hacer clic siempre */}
                   <button 
                     className={`follow-btn ${isFollowing ? "following-mode" : ""}`} 
-                    onClick={() => !isFollowing && handleFollow(u._id)}
+                    onClick={() => handleFollow(u._id)}
                   >
                     {isFollowing ? "Siguiendo" : "Seguir"}
                   </button>
