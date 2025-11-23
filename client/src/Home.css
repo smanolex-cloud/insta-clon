@@ -1,8 +1,10 @@
+/* === CONTENEDOR PRINCIPAL === */
 .home-container {
   background-color: #fafafa;
   min-height: 100vh;
 }
 
+/* === BARRA DE NAVEGACIÓN SUPERIOR === */
 .navbar {
   background-color: white;
   padding: 10px 20px;
@@ -15,39 +17,57 @@
   z-index: 100;
 }
 
-/* AQUÍ CREAMOS LAS DOS COLUMNAS */
+.logout-btn {
+  background: red; 
+  color: white; 
+  border: none; 
+  padding: 5px 10px; 
+  border-radius: 5px; 
+  cursor: pointer;
+}
+
+/* ESTILO NUEVO: Botón de Chat */
+.chat-btn {
+  padding: 5px 10px; 
+  background: teal; 
+  color: white; 
+  border: none; 
+  border-radius: 5px; 
+  cursor: pointer;
+}
+
+/* === ESTRUCTURA DE COLUMNAS (Feed + Sugerencias) === */
 .main-content {
   display: flex;
   justify-content: center;
-  gap: 20px; /* Espacio entre columnas */
+  gap: 20px; 
   padding-top: 20px;
 }
 
-/* Columna Izquierda */
+/* Columna Izquierda (Fotos) */
 .feed-container {
-  flex: 5; /* Ocupa más espacio */
+  flex: 5; 
   max-width: 500px;
 }
 
-/* Columna Derecha (Barra lateral) */
+/* Columna Derecha (A quién seguir) */
 .rightbar {
   flex: 3;
   max-width: 300px;
-  background-color: white; /* Opcional: fondo blanco */
+  background-color: white; 
   height: fit-content;
   padding: 20px;
   border-radius: 10px;
-  display: none; /* En celular se oculta */
+  display: none; /* Se oculta en celulares */
 }
 
-/* Mostrar barra lateral solo en pantallas grandes */
 @media (min-width: 768px) {
   .rightbar {
     display: block;
   }
 }
 
-/* ESTILOS DE LA LISTA DE USUARIOS */
+/* === LISTA DE USUARIOS SUGERIDOS === */
 .user-list {
   list-style: none;
   padding: 0;
@@ -70,7 +90,7 @@
   font-weight: bold;
 }
 
-/* ESTILOS DE POSTS (Igual que antes) */
+/* === CAJA DE PUBLICAR Y TARJETAS DE FOTO === */
 .share-box, .post {
   background-color: white;
   border-radius: 10px;
@@ -79,14 +99,83 @@
   margin-bottom: 20px;
 }
 
+/* Caja de Publicar */
 .share-top { display: flex; align-items: center; margin-bottom: 10px; }
-.profile-img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; }
+.profile-img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; object-fit: cover;}
 .share-input { width: 100%; border: none; outline: none; }
 .share-bottom { display: flex; justify-content: space-between; }
 .url-input { border: 1px solid #ddd; padding: 5px; border-radius: 5px; width: 70%; }
 .share-btn { background-color: #1877f2; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
 
-.post-img { width: 100%; margin-top: 10px; border-radius: 5px; }
+/* Estilos de la Foto */
 .post-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 10px; }
-.post-bottom { margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; }
-.logout-btn { background: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+.post-date { font-weight: normal; font-size: 12px; color: gray; }
+.post-img { width: 100%; margin-top: 10px; border-radius: 5px; object-fit: cover; }
+
+/* === NUEVOS ESTILOS: ACCIONES (Likes y Comentarios) === */
+.post-actions {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 5px;
+}
+
+.post-info {
+  font-weight: 500;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+/* Sección de Comentarios (Desplegable) */
+.comments-section {
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+.comments-list {
+  max-height: 150px; /* Si hay muchos, hace scroll */
+  overflow-y: auto;
+  margin-bottom: 10px;
+}
+
+.comment-item {
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+/* Formulario para escribir comentario */
+.comment-form {
+  display: flex;
+  gap: 5px;
+}
+
+.comment-form input {
+  flex: 1;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  padding: 5px;
+  outline: none;
+  font-size: 13px;
+}
+
+.comment-form button {
+  border: none;
+  background: white;
+  color: #0095f6;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+/* Botón de Borrar Foto */
+.delete-btn {
+  background: transparent;
+  border: none;
+  color: red;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 12px;
+  width: 100%;
+  text-align: right;
+}
