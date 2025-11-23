@@ -3,7 +3,7 @@ import axios from "axios";
 import Post from "./Post";
 import "./Home.css";
 
-// TU LINK DE RENDER
+// URL DE RENDER
 const API_URL = "https://insta-clon-api.onrender.com/api"; 
 
 export default function Home() {
@@ -15,7 +15,6 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
-  // Aseguramos que el usuario tenga la lista de seguidos
   const user = JSON.parse(localStorage.getItem("user"));
   if (!user.followings) user.followings = [];
 
@@ -45,7 +44,7 @@ export default function Home() {
     }
   };
 
-  // CAMBIAR FOTO DE PERFIL
+  // CAMBIAR FOTO
   const changeProfilePic = async () => {
     const url = prompt("Pega el URL de tu nueva foto de perfil:");
     if (!url) return;
@@ -91,6 +90,11 @@ export default function Home() {
 
   const handleLogout = () => { localStorage.removeItem("user"); window.location.reload(); };
 
+  // FUNCIÓN PARA IR AL PERFIL (NUEVA)
+  const goToProfile = (username) => {
+    window.location.href = `/profile/${username}`;
+  };
+
   return (
     <div className="home-container">
       <div className="navbar">
@@ -105,23 +109,32 @@ export default function Home() {
             value={searchQuery}
             onChange={handleSearch}
           />
+          
+          {/* RESULTADOS FLOTANTES */}
           {searchResults.length > 0 && (
             <div className="search-results">
               {searchResults.map(u => (
-                <div key={u._id} className="search-item">
-                  {/* --- AQUÍ ESTÁ EL CAMBIO CLAVE --- */}
-                  {/* Al hacer clic en el nombre, te lleva al perfil */}
-                  <span 
-                    onClick={() => window.location.href=`/profile/${u.username}`}
-                    style={{ cursor: "pointer", fontWeight: "bold" }}
-                    title="Ver perfil"
-                  >
-                    {u.username}
-                  </span>
+                <div 
+                  key={u._id} 
+                  className="search-item"
+                  // HACEMOS QUE TODA LA FILA SEA CLICKEABLE
+                  onClick={() => goToProfile(u.username)}
+                  style={{cursor: "pointer"}}
+                  title="Ir al perfil"
+                >
+                  <span style={{fontWeight: "bold"}}>{u.username}</span>
                   
-                  {/* Botón de seguir (solo si no soy yo) */}
+                  {/* Botón de seguir */}
                   {u._id !== user._id && (
-                    <button className="mini-follow-btn" onClick={() => handleFollow(u._id)}>Seguir</button>
+                    <button 
+                      className="mini-follow-btn" 
+                      onClick={(e) => {
+                        e.stopPropagation(); // ESTO ES VITAL: Evita que al dar "Seguir" te lleve al perfil
+                        handleFollow(u._id);
+                      }}
+                    >
+                      Seguir
+                    </button>
                   )}
                 </div>
               ))}
@@ -164,10 +177,10 @@ export default function Home() {
           <ul className="user-list">
             {users.map((u) => (
               <li key={u._id} className="user-item">
-                {/* También hacemos clicable el nombre en la lista de sugerencias */}
+                {/* Nombre en la lista de sugerencias también clickeable */}
                 <span 
                   style={{fontWeight: "bold", cursor: "pointer"}}
-                  onClick={() => window.location.href=`/profile/${u.username}`}
+                  onClick={() => goToProfile(u.username)}
                 >
                   {u.username}
                 </span>
