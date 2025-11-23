@@ -1,0 +1,92 @@
+.home-container {
+  background-color: #fafafa;
+  min-height: 100vh;
+}
+
+.navbar {
+  background-color: white;
+  padding: 10px 20px;
+  border-bottom: 1px solid #dbdbdb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* AQUÍ CREAMOS LAS DOS COLUMNAS */
+.main-content {
+  display: flex;
+  justify-content: center;
+  gap: 20px; /* Espacio entre columnas */
+  padding-top: 20px;
+}
+
+/* Columna Izquierda */
+.feed-container {
+  flex: 5; /* Ocupa más espacio */
+  max-width: 500px;
+}
+
+/* Columna Derecha (Barra lateral) */
+.rightbar {
+  flex: 3;
+  max-width: 300px;
+  background-color: white; /* Opcional: fondo blanco */
+  height: fit-content;
+  padding: 20px;
+  border-radius: 10px;
+  display: none; /* En celular se oculta */
+}
+
+/* Mostrar barra lateral solo en pantallas grandes */
+@media (min-width: 768px) {
+  .rightbar {
+    display: block;
+  }
+}
+
+/* ESTILOS DE LA LISTA DE USUARIOS */
+.user-list {
+  list-style: none;
+  padding: 0;
+}
+
+.user-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.follow-btn {
+  background-color: #0095f6;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* ESTILOS DE POSTS (Igual que antes) */
+.share-box, .post {
+  background-color: white;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0px 0px 5px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.share-top { display: flex; align-items: center; margin-bottom: 10px; }
+.profile-img { width: 40px; height: 40px; border-radius: 50%; margin-right: 10px; }
+.share-input { width: 100%; border: none; outline: none; }
+.share-bottom { display: flex; justify-content: space-between; }
+.url-input { border: 1px solid #ddd; padding: 5px; border-radius: 5px; width: 70%; }
+.share-btn { background-color: #1877f2; color: white; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
+
+.post-img { width: 100%; margin-top: 10px; border-radius: 5px; }
+.post-header { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 10px; }
+.post-bottom { margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; }
+.logout-btn { background: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
