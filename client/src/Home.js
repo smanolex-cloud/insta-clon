@@ -44,6 +44,11 @@ export default function Home() {
     }
   };
 
+  // IR AL PERFIL
+  const goToProfile = (username) => {
+    window.location.href = `/profile/${username}`;
+  };
+
   // CAMBIAR FOTO
   const changeProfilePic = async () => {
     const url = prompt("Pega el URL de tu nueva foto de perfil:");
@@ -90,11 +95,6 @@ export default function Home() {
 
   const handleLogout = () => { localStorage.removeItem("user"); window.location.reload(); };
 
-  // FUNCIÓN PARA IR AL PERFIL (NUEVA)
-  const goToProfile = (username) => {
-    window.location.href = `/profile/${username}`;
-  };
-
   return (
     <div className="home-container">
       <div className="navbar">
@@ -113,31 +113,37 @@ export default function Home() {
           {/* RESULTADOS FLOTANTES */}
           {searchResults.length > 0 && (
             <div className="search-results">
-              {searchResults.map(u => (
-                <div 
-                  key={u._id} 
-                  className="search-item"
-                  // HACEMOS QUE TODA LA FILA SEA CLICKEABLE
-                  onClick={() => goToProfile(u.username)}
-                  style={{cursor: "pointer"}}
-                  title="Ir al perfil"
-                >
-                  <span style={{fontWeight: "bold"}}>{u.username}</span>
-                  
-                  {/* Botón de seguir */}
-                  {u._id !== user._id && (
-                    <button 
-                      className="mini-follow-btn" 
-                      onClick={(e) => {
-                        e.stopPropagation(); // ESTO ES VITAL: Evita que al dar "Seguir" te lleve al perfil
-                        handleFollow(u._id);
-                      }}
-                    >
-                      Seguir
-                    </button>
-                  )}
-                </div>
-              ))}
+              {searchResults.map(u => {
+                // Verificamos si ya lo seguimos
+                const isFollowing = user.followings.includes(u._id);
+                
+                return (
+                  <div 
+                    key={u._id} 
+                    className="search-item"
+                    onClick={() => goToProfile(u.username)}
+                    title="Ir al perfil"
+                  >
+                    <div style={{display:"flex", alignItems:"center", gap:"10px"}}>
+                      <img src={u.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" style={{width:"30px", height:"30px", borderRadius:"50%", objectFit:"cover"}}/>
+                      <span style={{fontWeight: "bold"}}>{u.username}</span>
+                    </div>
+                    
+                    {/* Botón Inteligente: Seguir o Siguiendo */}
+                    {u._id !== user._id && (
+                      <button 
+                        className={`mini-follow-btn ${isFollowing ? "following-mode" : ""}`} 
+                        onClick={(e) => {
+                          e.stopPropagation(); 
+                          if (!isFollowing) handleFollow(u._id);
+                        }}
+                      >
+                        {isFollowing ? "Siguiendo" : "Seguir"}
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
@@ -172,21 +178,29 @@ export default function Home() {
             <Post key={p._id} post={p} user={user} handleDelete={handleDelete} />
           ))}
         </div>
+        
         <div className="rightbar">
           <h3>Sugerencias</h3>
           <ul className="user-list">
-            {users.map((u) => (
-              <li key={u._id} className="user-item">
-                {/* Nombre en la lista de sugerencias también clickeable */}
-                <span 
-                  style={{fontWeight: "bold", cursor: "pointer"}}
-                  onClick={() => goToProfile(u.username)}
-                >
-                  {u.username}
-                </span>
-                <button className="follow-btn" onClick={() => handleFollow(u._id)}>Seguir</button>
-              </li>
-            ))}
+            {users.map((u) => {
+              const isFollowing = user.followings.includes(u._id);
+              return (
+                <li key={u._id} className="user-item">
+                  <span 
+                    style={{fontWeight: "bold", cursor: "pointer"}}
+                    onClick={() => goToProfile(u.username)}
+                  >
+                    {u.username}
+                  </span>
+                  <button 
+                    className={`follow-btn ${isFollowing ? "following-mode" : ""}`} 
+                    onClick={() => !isFollowing && handleFollow(u._id)}
+                  >
+                    {isFollowing ? "Siguiendo" : "Seguir"}
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>

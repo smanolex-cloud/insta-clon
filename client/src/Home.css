@@ -21,7 +21,7 @@
 
 .navbar h2 {
   margin: 0;
-  font-family: cursive; 
+  font-family: cursive;
   font-size: 24px;
 }
 
@@ -44,12 +44,12 @@
   position: absolute;
   top: 45px;
   left: 0;
-  width: 300px; /* Un poco más ancho */
+  width: 300px;
   background-color: white;
   border: 1px solid #dbdbdb;
   border-radius: 5px;
   box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
-  z-index: 9999; /* ¡MUY IMPORTANTE! */
+  z-index: 9999; /* Encima de todo */
   overflow: hidden;
 }
 
@@ -60,14 +60,15 @@
   justify-content: space-between;
   align-items: center;
   font-size: 14px;
-  cursor: pointer; /* Manita al pasar el mouse */
+  cursor: pointer;
   transition: background 0.2s;
 }
 
 .search-item:hover {
-  background-color: #f0f0f0; /* Efecto gris al pasar el mouse */
+  background-color: #f0f0f0;
 }
 
+/* BOTONES DE SEGUIR (AZUL - NORMAL) */
 .mini-follow-btn {
   background: #0095f6;
   color: white;
@@ -77,9 +78,34 @@
   cursor: pointer;
   font-size: 12px;
   font-weight: bold;
+  min-width: 80px;
+  transition: background 0.2s;
 }
 
-/* BOTONES DE LA DERECHA */
+.follow-btn {
+  background-color: transparent;
+  color: #0095f6;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 12px;
+}
+
+/* === ESTILO NUEVO: BOTÓN "SIGUIENDO" (GRIS) === */
+.mini-follow-btn.following-mode,
+.follow-btn.following-mode {
+  background-color: #dbdbdb !important;
+  color: black !important;
+  cursor: default;
+  border: 1px solid #ccc;
+  /* Para que el botón de la lista lateral también se vea botón */
+  padding: 4px 10px; 
+  border-radius: 4px;
+  text-decoration: none;
+}
+
+/* BOTONES DE LA DERECHA (CHAT/SALIR) */
 .chat-btn {
   padding: 5px 10px; 
   background: white; 
@@ -127,7 +153,6 @@
 
 .user-list { list-style: none; padding: 0; }
 .user-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-.follow-btn { background-color: transparent; color: #0095f6; border: none; padding: 0; cursor: pointer; font-weight: bold; font-size: 12px; }
 
 /* === CAJA DE PUBLICAR === */
 .share-box {
@@ -144,7 +169,32 @@
 .url-input { border: 1px solid #dbdbdb; padding: 8px; border-radius: 20px; width: 70%; background: #fafafa; outline: none; }
 .share-btn { background-color: #0095f6; color: white; border: none; padding: 6px 15px; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
-/* === ESTILOS NUEVOS PARA POSTS Y COMENTARIOS === */
+/* === TARJETAS DE POSTS === */
+.post {
+  background-color: white;
+  border-radius: 8px;
+  border: 1px solid #dbdbdb;
+  margin-bottom: 20px;
+  padding: 0; 
+}
+
+.post-header { padding: 15px; display: flex; justify-content: space-between; align-items: center; }
+.post-username { font-weight: bold; font-size: 14px; cursor: pointer; }
+.post-date { font-size: 12px; color: gray; }
+.post-text { display: block; padding: 0 15px 10px 15px; font-size: 14px; }
+
+/* === ARREGLO URGENTE DE IMÁGENES (NO APLASTADAS) === */
+.post-img {
+  width: 100% !important;
+  height: auto !important; /* Esto arregla que no se estire */
+  margin-top: 10px;
+  object-fit: unset !important;
+  max-height: none !important;
+  display: block; 
+}
+
+/* ACCIONES Y COMENTARIOS */
+.post-bottom { padding: 10px 15px; }
 .post-actions { display: flex; align-items: center; margin-bottom: 10px; }
 .post-info { font-weight: 500; margin-bottom: 10px; }
 .comments-section { border-top: 1px solid #eee; padding-top: 10px; margin-top: 10px; }
@@ -153,14 +203,4 @@
 .comment-form { display: flex; gap: 5px; }
 .comment-form input { flex: 1; border: none; border-bottom: 1px solid #ccc; padding: 5px; outline: none; }
 .comment-form button { border: none; background: white; color: #0095f6; font-weight: bold; cursor: pointer; }
-.delete-btn { background: transparent; border: none; color: red; cursor: pointer; margin-top: 10px; font-size: 12px; }
-
-/* === ARREGLO URGENTE DE IMÁGENES === */
-.post-img {
-  width: 100% !important;  /* Fuerza a ocupar el ancho del contenedor */
-  height: auto !important; /* ¡LA CLAVE! La altura se calcula sola para no estirarse */
-  margin-top: 10px;
-  border-radius: 5px;
-  object-fit: unset !important; /* Elimina cualquier efecto de recorte o estiramiento forzado */
-  max-height: none !important; /* Quitamos límites de altura para que se vea la foto completa */
-}
+.delete-btn { background: transparent; border: none; color: red; cursor: pointer; margin-top: 10px; font-size: 12px; width: 100%; text-align: right; }
