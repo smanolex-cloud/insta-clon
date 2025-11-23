@@ -1,34 +1,31 @@
 /* CONTENEDOR PRINCIPAL */
 .messenger {
-  height: calc(100vh - 70px); /* Restamos la altura del navbar */
+  height: 100vh;
   display: flex;
-  background-color: #121212; /* Fondo Negro */
+  background-color: #121212;
   color: #e0e0e0;
   font-family: sans-serif;
 }
 
-/* --- MENÚ IZQUIERDO (LISTA DE AMIGOS) --- */
+/* --- MENÚ IZQUIERDO --- */
 .chatMenu {
-  flex: 3; /* Ocupa 30% del ancho */
-  border-right: 1px solid #333333;
+  flex: 3;
+  border-right: 1px solid #333;
   background-color: #1e1e1e;
   overflow-y: scroll;
 }
 
 .chatMenuWrapper {
-  padding: 10px;
   height: 100%;
 }
 
-/* ITEM DE AMIGO */
 .conversation {
   display: flex;
   align-items: center;
-  padding: 10px;
+  padding: 10px 15px;
   cursor: pointer;
-  margin-top: 10px;
-  border-radius: 10px;
   transition: background-color 0.2s;
+  border-bottom: 1px solid #2a2a2a;
 }
 
 .conversation:hover {
@@ -51,7 +48,7 @@
 
 /* --- CAJA DE CHAT (DERECHA) --- */
 .chatBox {
-  flex: 7; /* Ocupa 70% del ancho */
+  flex: 7;
   background-color: #121212;
   position: relative;
 }
@@ -60,65 +57,69 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  position: relative;
 }
 
-/* CABECERA DEL CHAT (DONDE SALÍA LA FOTO GIGANTE) */
+/* CABECERA FIJA ARRIBA */
 .chatHeader {
-  padding: 10px 20px;
-  border-bottom: 1px solid #333333;
+  padding: 0 20px;
+  border-bottom: 1px solid #333;
   background-color: #1e1e1e;
   display: flex;
   align-items: center;
+  justify-content: space-between; /* Separa nombre y botón */
   height: 60px;
 }
 
-/* ¡ESTO ARREGLA LA FOTO GIGANTE! */
 .headerImg {
-  width: 40px !important;
-  height: 40px !important;
+  width: 35px;
+  height: 35px;
   border-radius: 50%;
   object-fit: cover;
-  margin-right: 15px;
-  border: 1px solid #333;
+  margin-right: 10px;
 }
 
 .headerName {
   font-weight: bold;
-  font-size: 18px;
+  font-size: 16px;
   color: white;
 }
 
-/* ÁREA DE MENSAJES (SCROLL) */
+/* BOTÓN VOLVER (INTEGRADO) */
+.chat-back-btn {
+  background: transparent;
+  border: 1px solid #555;
+  color: #e0e0e0;
+  padding: 5px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.chat-back-btn:hover { background-color: #333; }
+
+/* AREA DE MENSAJES */
 .chatBoxTop {
-  flex: 1; /* Ocupa todo el espacio disponible */
+  flex: 1;
   overflow-y: scroll;
   padding: 20px;
+  background-color: #0f0f0f;
 }
 
-/* --- BURBUJAS DE MENSAJE --- */
 .message {
   display: flex;
   flex-direction: column;
-  margin-top: 20px;
+  margin-top: 15px;
 }
 
-.messageTop {
-  display: flex;
-}
-
-/* MENSAJE DE AMIGO (GRIS) */
 .messageText {
-  padding: 12px 15px;
+  padding: 10px 15px;
   border-radius: 20px;
-  background-color: #333333;
+  background-color: #333;
   color: white;
   max-width: 300px;
   font-size: 15px;
   line-height: 1.4;
 }
 
-/* MENSAJE MÍO (MORADO - DERECHA) */
 .message.own {
   align-items: flex-end;
 }
@@ -126,20 +127,17 @@
 .message.own .messageText {
   background-color: #8e24aa; /* Morado */
   color: white;
-  border-bottom-right-radius: 2px; /* Estilo visual */
 }
 
-/* Hora del mensaje */
 .messageBottom {
   font-size: 11px;
   margin-top: 5px;
-  color: #a0a0a0;
+  color: #777;
 }
 
-/* --- ÁREA DE ESCRIBIR (ABAJO) --- */
+/* AREA DE INPUT (ABAJO) */
 .chatBoxBottom {
-  margin-top: auto; /* Se pega al fondo */
-  padding: 15px;
+  padding: 10px 15px;
   display: flex;
   align-items: center;
   background-color: #1e1e1e;
@@ -147,57 +145,55 @@
 }
 
 .chatMessageInput {
-  flex: 1; /* Ocupa todo el ancho posible */
-  height: 40px;
+  flex: 1;
+  height: 40px; /* MÁS PEQUEÑO Y ELEGANTE */
   padding: 10px 15px;
   background-color: #2a2a2a;
   color: white;
-  border: 1px solid #333;
+  border: none;
   border-radius: 20px;
   resize: none;
   outline: none;
   font-family: sans-serif;
   margin-right: 10px;
+  line-height: 20px;
 }
 
 .chatSubmitButton {
-  width: 80px;
+  width: 50px;
   height: 40px;
   border: none;
-  border-radius: 20px;
+  border-radius: 50%; /* Botón redondo */
   cursor: pointer;
   background-color: #8e24aa;
   color: white;
-  font-weight: bold;
-  transition: background 0.2s;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.chatSubmitButton:hover { background-color: #ab47bc; }
+
+/* ESTADO VACÍO */
+.noConversationState {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #555;
 }
 
-.chatSubmitButton:hover {
-  background-color: #ab47bc;
-}
-
-/* TEXTO CUANDO NO HAY CHAT SELECCIONADO */
 .noConversationText {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
   font-size: 24px;
-  color: #555;
-  text-align: center;
-  cursor: default;
+  margin-bottom: 20px;
 }
 
-/* BOTÓN VOLVER */
-.back-btn {
-  position: absolute;
-  top: 80px; /* Ajustado para que no tape el header */
-  right: 20px;
-  padding: 8px 15px;
-  background-color: #333;
-  color: white;
-  border: 1px solid #555;
-  border-radius: 5px;
-  cursor: pointer;
-  z-index: 1000;
+.chat-back-btn-floating {
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }

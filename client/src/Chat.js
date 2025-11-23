@@ -44,6 +44,8 @@ export default function Chat() {
   // 3. ENVIAR MENSAJE
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!newMessage.trim()) return; // Evitar mensajes vacíos
+    
     const message = {
       senderId: localUser._id,
       receiverId: currentChatUser._id,
@@ -65,7 +67,7 @@ export default function Chat() {
       {/* MENU IZQUIERDO */}
       <div className="chatMenu">
         <div className="chatMenuWrapper">
-          <h3 style={{padding: "10px", borderBottom: "1px solid #333"}}>💬 Chats</h3>
+          <h3 style={{padding: "20px 10px", borderBottom: "1px solid #333", margin: 0, fontSize: "20px"}}>💬 Chats</h3>
           {friends.length === 0 ? (
             <p style={{padding:"20px", color:"gray", textAlign:"center"}}>No sigues a nadie aún.</p>
           ) : (
@@ -84,14 +86,17 @@ export default function Chat() {
         <div className="chatBoxWrapper">
           {currentChatUser ? (
             <>
-              {/* CABECERA DEL CHAT */}
+              {/* CABECERA ORDENADA (Foto - Nombre - Botón Volver) */}
               <div className="chatHeader">
-                <img 
-                  className="headerImg" 
-                  src={currentChatUser.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} 
-                  alt="" 
-                />
-                <span className="headerName">{currentChatUser.username}</span>
+                <div style={{display:"flex", alignItems:"center"}}>
+                    <img 
+                    className="headerImg" 
+                    src={currentChatUser.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} 
+                    alt="" 
+                    />
+                    <span className="headerName">{currentChatUser.username}</span>
+                </div>
+                <button className="chat-back-btn" onClick={() => window.location.href = "/"}>⬅ Volver</button>
               </div>
 
               {/* MENSAJES */}
@@ -106,24 +111,26 @@ export default function Chat() {
                 ))}
               </div>
 
-              {/* INPUT ESCRIBIR */}
+              {/* INPUT ORDENADO Y MÁS PEQUEÑO */}
               <div className="chatBoxBottom">
                 <textarea 
                   className="chatMessageInput" 
                   placeholder="Escribe un mensaje..." 
                   onChange={(e) => setNewMessage(e.target.value)} 
                   value={newMessage}
+                  onKeyDown={(e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(e); } }}
                 ></textarea>
-                <button className="chatSubmitButton" onClick={handleSubmit}>Enviar</button>
+                <button className="chatSubmitButton" onClick={handleSubmit}>➤</button>
               </div>
             </>
           ) : (
-            <span className="noConversationText">Selecciona un amigo para chatear</span>
+            <div className="noConversationState">
+                <span className="noConversationText">Selecciona un amigo para chatear</span>
+                <button className="chat-back-btn-floating" onClick={() => window.location.href = "/"}>⬅ Volver al Inicio</button>
+            </div>
           )}
         </div>
       </div>
-      
-      <button className="back-btn" onClick={() => window.location.href = "/"}>⬅ Volver al Inicio</button>
     </div>
   );
 }
