@@ -4,11 +4,10 @@ import Login from "./Login";
 import Register from "./Register";
 import Home from "./Home";
 import Chat from "./Chat";
-import Profile from "./Profile"; // <--- IMPORTANTE
+import Profile from "./Profile";
 
 function App() {
   const user = localStorage.getItem("user");
-
   return (
     <Router>
       <Routes>
@@ -21,5 +20,4 @@ function App() {
     </Router>
   );
 }
-
 export default App;
