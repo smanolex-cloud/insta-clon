@@ -1,19 +1,92 @@
-.profile-container { max-width: 900px; margin: 0 auto; padding: 20px; color: #e0e0e0; }
-.back-btn-profile { background: none; border: none; font-size: 16px; cursor: pointer; margin-bottom: 20px; color: #e0e0e0; }
-.back-btn-profile:hover { color: #ba68c8; }
-.profile-header { display: flex; margin-bottom: 40px; align-items: center; }
-@media (max-width: 768px) { .profile-header { flex-direction: column; text-align: center; } .profile-info { padding-left: 0; margin-top: 20px; } .profile-name-row { justify-content: center; } .profile-stats { justify-content: center; } }
-.profile-pic-container { flex: 1; display: flex; justify-content: center; }
-.profile-user-img { width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 2px solid #333333; transition: opacity 0.2s; }
-.profile-user-img:hover { opacity: 0.8; }
-.profile-info { flex: 2; padding-left: 30px; }
-.profile-name-row { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
-.profile-username { font-weight: 300; font-size: 28px; margin: 0; color: #ffffff; }
-.profile-follow-btn { background-color: #8e24aa; color: white; border: none; padding: 5px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
-.profile-follow-btn:hover { background-color: #ab47bc; }
-.profile-follow-btn.following { background-color: #333333; color: #e0e0e0; border: 1px solid #444; }
+/* === CONTENEDOR PRINCIPAL === */
+.profile-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #e0e0e0;
+}
 
-/* NUEVO BOTÓN DE EDITAR */
+/* BOTÓN VOLVER */
+.back-btn-profile {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  color: #e0e0e0;
+  font-weight: 500;
+}
+.back-btn-profile:hover { color: #ba68c8; }
+
+/* === CABECERA DEL PERFIL === */
+.profile-header {
+  display: flex;
+  margin-bottom: 40px;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .profile-header { flex-direction: column; text-align: center; }
+  .profile-info { padding-left: 0; margin-top: 20px; }
+  .profile-name-row { justify-content: center; }
+  .profile-stats { justify-content: center; }
+}
+
+.profile-pic-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-user-img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #333333;
+  transition: opacity 0.2s;
+}
+.profile-user-img:hover { opacity: 0.8; }
+
+.profile-info {
+  flex: 2;
+  padding-left: 30px;
+}
+
+.profile-name-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.profile-username {
+  font-weight: 300;
+  font-size: 28px;
+  margin: 0;
+  color: #ffffff;
+}
+
+/* BOTONES DE ACCIÓN */
+.profile-follow-btn {
+  background-color: #8e24aa; /* Morado */
+  color: white;
+  border: none;
+  padding: 5px 20px;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.profile-follow-btn:hover { background-color: #ab47bc; }
+
+.profile-follow-btn.following {
+  background-color: #333333; /* Gris oscuro */
+  color: #e0e0e0;
+  border: 1px solid #444;
+}
+
 .profile-edit-btn {
   background-color: #2a2a2a;
   color: #e0e0e0;
@@ -22,25 +95,78 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 12px;
+  font-weight: bold;
 }
 .profile-edit-btn:hover { background-color: #333; }
 
-.profile-stats { display: flex; gap: 40px; font-size: 16px; margin-bottom: 20px; color: #e0e0e0; }
-.profile-divider { border: none; border-top: 1px solid #333333; margin-bottom: 20px; }
-.profile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.grid-item { position: relative; cursor: pointer; aspect-ratio: 1 / 1; background-color: #1e1e1e; }
-.grid-img { width: 100%; height: 100%; object-fit: cover; }
-.grid-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; color: white; gap: 20px; font-weight: bold; opacity: 0; transition: opacity 0.2s; }
-.grid-item:hover .grid-overlay { opacity: 1; }
+.profile-stats {
+  display: flex;
+  gap: 40px;
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: #e0e0e0;
+}
 
-/* ESTILOS DEL MODAL (POP-UP) */
+.profile-bio {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.profile-divider {
+  border: none;
+  border-top: 1px solid #333333;
+  margin-bottom: 20px;
+}
+
+/* === GRID DE FOTOS === */
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px; /* Espacio pequeño estilo Instagram */
+}
+
+.grid-item {
+  position: relative;
+  cursor: pointer;
+  aspect-ratio: 1 / 1; /* Cuadrados perfectos */
+  background-color: #1e1e1e;
+}
+
+.grid-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.grid-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  gap: 20px;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.grid-item:hover .grid-overlay {
+  opacity: 1;
+}
+
+/* === ESTILOS DEL MODAL (POP-UP DE FOTO) === */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.85); /* Fondo negro transparente */
+  background-color: rgba(0, 0, 0, 0.85); /* Fondo oscuro transparente */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -52,21 +178,22 @@
   display: flex;
   max-width: 900px;
   width: 90%;
-  max-height: 90vh; /* 90% de la altura de la pantalla */
+  max-height: 90vh; /* 90% del alto de pantalla */
   border-radius: 5px;
   overflow: hidden;
   box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  color: #e0e0e0;
 }
 
-/* En móvil se ve en columna, en PC en fila */
 @media (max-width: 700px) {
-  .modal-content { flex-direction: column; }
-  .modal-img-container { width: 100%; height: 50%; }
-  .modal-info { width: 100%; height: 50%; }
+  .modal-content { flex-direction: column; overflow-y: auto; }
+  .modal-img-container { width: 100%; height: 50vh; }
+  .modal-info { width: 100%; height: auto; }
 }
 
+/* Lado Izquierdo: Imagen */
 .modal-img-container {
-  flex: 1.5;
+  flex: 1.5; /* Ocupa más espacio */
   background-color: black;
   display: flex;
   align-items: center;
@@ -76,45 +203,76 @@
 .modal-img {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* Para ver la foto entera */
+  object-fit: contain; /* Se ajusta sin recortarse */
 }
 
+/* Lado Derecho: Info y Comentarios */
 .modal-info {
   flex: 1;
-  padding: 20px;
   display: flex;
   flex-direction: column;
   border-left: 1px solid #333;
+  position: relative;
+  background-color: #1e1e1e;
 }
 
 .modal-header {
   display: flex;
   align-items: center;
   border-bottom: 1px solid #333;
-  padding-bottom: 15px;
-  margin-bottom: 15px;
+  padding: 15px;
+  height: 60px;
+  box-sizing: border-box;
 }
 
+/* Área Scrollable de Descripción y Comentarios */
 .modal-desc {
-  flex: 1; /* Ocupa el espacio libre */
+  flex: 1;
   overflow-y: auto;
+  padding: 15px;
   font-size: 14px;
   line-height: 1.5;
 }
 
 .modal-stats {
-  padding-top: 15px;
+  padding: 15px;
   border-top: 1px solid #333;
-  font-weight: bold;
 }
 
-.modal-close-btn {
-  margin-top: 15px;
-  background-color: #333;
-  color: white;
-  border: none;
+/* Input de comentario fijo abajo */
+.modal-comment-form {
+  display: flex;
+  border-top: 1px solid #333;
   padding: 10px;
-  border-radius: 5px;
+  background-color: #1e1e1e;
+}
+
+.modal-comment-form input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: white;
+  outline: none;
+  padding: 5px;
+}
+
+.modal-comment-form button {
+  background: transparent;
+  border: none;
+  color: #ba68c8;
+  font-weight: bold;
   cursor: pointer;
 }
-.modal-close-btn:hover { background-color: #444; }
+.modal-comment-form button:disabled { color: #555; }
+
+.modal-close-btn {
+  margin-top: 10px;
+  background-color: #333; 
+  border: none; 
+  color: white; 
+  padding: 5px 10px; 
+  border-radius: 4px; 
+  cursor: pointer;
+  align-self: flex-end;
+  font-size: 12px;
+}
