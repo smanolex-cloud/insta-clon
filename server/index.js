@@ -6,6 +6,7 @@ const postRoute = require("./routes/posts");
 const userRoute = require("./routes/users");
 const messageRoute = require("./routes/messages");
 const notificationRoute = require("./routes/notifications");
+const storyRoute = require("./routes/stories"); // <--- NUEVO IMPORT
 require("dotenv").config();
 
 const app = express();
@@ -16,7 +17,8 @@ app.use("/api/auth", authRoute);
 app.use("/api/posts", postRoute);
 app.use("/api/users", userRoute);
 app.use("/api/messages", messageRoute);
-app.use("/api/notifications", notificationRoute); // Asegurarse de que esté aquí
+app.use("/api/notifications", notificationRoute);
+app.use("/api/stories", storyRoute); // <--- NUEVA RUTA
 
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ Conectado a la Base de Datos"))

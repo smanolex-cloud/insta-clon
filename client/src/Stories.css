@@ -1,0 +1,123 @@
+.stories-container {
+  display: flex;
+  gap: 15px;
+  padding: 15px;
+  background-color: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  overflow-x: auto; /* Scroll horizontal */
+  white-space: nowrap;
+}
+
+/* Ocultar barra de scroll fea */
+.stories-container::-webkit-scrollbar { display: none; }
+
+.story-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  min-width: 70px;
+}
+
+.story-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  padding: 2px; /* Espacio para el borde */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* BORDE DEGRADADO DE INSTAGRAM */
+.story-circle.has-story {
+  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+}
+
+.story-circle img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid #1e1e1e; /* Borde negro interno */
+  object-fit: cover;
+}
+
+/* ESTILO PARA MI HISTORIA */
+.story-circle.my-story {
+  border: 2px dashed #555;
+}
+
+.plus-icon {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: #0095f6;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  border: 2px solid #1e1e1e;
+}
+
+.story-username {
+  font-size: 12px;
+  margin-top: 5px;
+  color: #e0e0e0;
+  max-width: 70px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.uploading-text {
+  font-size: 10px;
+  color: #0095f6;
+}
+
+/* VISOR DE HISTORIA (MODAL) */
+.story-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.story-view-content {
+  max-width: 400px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.story-header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  color: white;
+  gap: 10px;
+}
+
+.story-header img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+}
+
+.story-full-img {
+  width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 10px;
+}
