@@ -54,7 +54,7 @@ export default function Chat() {
     return () => clearInterval(interval);
   }, [currentChatUser, localUser._id]);
 
-  // 4. ENVIAR
+  // 4. ENVIAR TEXTO
   const handleSubmit = async (e) => {
     e.preventDefault();
     if(!newMessage.trim()) return;
@@ -86,87 +86,95 @@ export default function Chat() {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  // --- NAVEGACIÓN INTELIGENTE ---
+  const handleBack = () => {
+    // Si estoy viendo un chat, el botón "Atrás" me lleva a la lista (solo afecta a móvil)
+    if (currentChatUser) {
+      setCurrentChatUser(null);
+    } else {
+      // Si estoy en la lista, el botón "Atrás" me lleva al Home
+      window.location.href = "/";
+    }
+  };
+
   useEffect(() => { scrollRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
 
   return (
-    <div className="messenger">
+    // CLASE DINÁMICA: Si hay chat usuario seleccionado, activamos modo chat
+    <div className={`messenger ${currentChatUser ? "chat-mode" : "list-mode"}`}>
+      
+      {/* --- MENU IZQUIERDO (LISTA) --- */}
       <div className="chatMenu">
         <div className="chatMenuWrapper">
-          <div style={{padding: "15px"}}>
-            <input type="text" placeholder="Búsqueda" className="chat-search-input" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+          <div className="chatMenuHeader">
+             <button className="menu-back-btn" onClick={() => window.location.href="/"}>⬅ Inicio</button>
+             <span style={{fontWeight:"bold"}}>Chats</span>
+             <div style={{width:"20px"}}></div> {/* Espacio para centrar */}
+          </div>
+          <div style={{padding: "10px"}}>
+            <input type="text" placeholder="🔍 Buscar..." className="chat-search-input" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
           </div>
           {filteredFriends.map((friend) => (
             <div key={friend._id} className={`conversation ${currentChatUser?._id === friend._id ? 'active' : ''}`} onClick={() => setCurrentChatUser(friend)}>
-              <img className="conversationImg" src={friend.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" />
+              <div style={{position:"relative"}}>
+                <img className="conversationImg" src={friend.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" />
+              </div>
               <span className="conversationName">{friend.username}</span>
             </div>
           ))}
         </div>
       </div>
 
+      {/* --- CAJA DE CHAT (DERECHA) --- */}
       <div className="chatBox">
         <div className="chatBoxWrapper">
           {currentChatUser ? (
             <>
               <div className="chatHeader">
                 <div style={{display:"flex", alignItems:"center"}}>
+                    <button className="mobile-back-arrow" onClick={handleBack}>⬅</button>
                     <img className="headerImg" src={currentChatUser.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} alt="" />
-                    <span className="headerName">{currentChatUser.username}</span>
+                    <div>
+                        <span className="headerName">{currentChatUser.username}</span>
+                        <div style={{fontSize:"10px", color:"#aaa"}}>En el chat</div>
+                    </div>
                 </div>
-                <button className="chat-back-btn" onClick={() => window.location.href = "/"}>Inicio</button>
+                <button className="chat-info-btn">ℹ️</button>
               </div>
               
               <div className="chatBoxTop">
                 {messages.map((m) => (
                   <div key={m._id} ref={scrollRef} className={m.senderId === localUser._id ? "message own" : "message"}>
-                    <div className="messageTop">
-                      
-                      {/* FOTO MINIATURA DEL AMIGO (Solo si NO soy yo) */}
-                      {m.senderId !== localUser._id && (
-                        <img 
-                            src={currentChatUser.profilePic || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} 
-                            alt="" 
-                            className="message-avatar-small"
-                        />
-                      )}
-
-                      <div style={{display:"flex", flexDirection:"column", alignItems: m.senderId === localUser._id ? "flex-end" : "flex-start"}}>
-                          {/* RESPUESTA A HISTORIA */}
-                          {m.storyImg && (
-                            <div className="story-reply-bubble">
-                                <img src={m.storyImg} alt="Story" />
-                                <span>Respondió a tu historia</span>
-                            </div>
-                          )}
-                          
-                          {/* IMAGEN O TEXTO */}
-                          {m.img && <img src={m.img} alt="Enviada" className="message-sent-img" />}
-                          {m.text && <p className="messageText">{m.text}</p>}
-                      </div>
+                    <div className="messageTop" style={{flexDirection:"column", alignItems: m.senderId === localUser._id ? "flex-end" : "flex-start"}}>
+                      {m.storyImg && <div className="story-reply-bubble"><img src={m.storyImg} alt="Story" /><span>Respondió a historia</span></div>}
+                      {m.img && <img src={m.img} alt="Enviada" className="message-sent-img" />}
+                      {m.text && <p className="messageText">{m.text}</p>}
                     </div>
                     <div className="messageBottom">{formatTime(m.createdAt)}</div>
                   </div>
                 ))}
               </div>
 
-              {/* INPUT TIPO INSTAGRAM (PÍLDORA) */}
               <div className="chatBoxBottom">
                 {showPicker && <div className="emoji-picker-container"><Picker onEmojiClick={onEmojiClick} theme="dark" width={300} height={350} /></div>}
                 
                 <div className="input-pill-container">
                     <span className="chat-icon-btn" onClick={() => setShowPicker(!showPicker)}>😀</span>
-                    <textarea className="chatMessageInput" placeholder="Envía un mensaje..." onChange={(e) => setNewMessage(e.target.value)} value={newMessage} onKeyDown={(e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(e); } }}></textarea>
-                    <span className="chat-icon-btn" onClick={() => fileInputRef.current.click()}>📷</span>
-                    <button className="chatSubmitButton" onClick={handleSubmit}>Enviar</button>
+                    <textarea className="chatMessageInput" placeholder="Mensaje..." onChange={(e) => setNewMessage(e.target.value)} value={newMessage} onKeyDown={(e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(e); } }}></textarea>
+                    {isUploading ? <span style={{fontSize:"12px"}}>...</span> : <span className="chat-icon-btn" onClick={() => fileInputRef.current.click()}>📷</span>}
+                    {newMessage.trim() ? <button className="chatSubmitButton" onClick={handleSubmit}>Enviar</button> : null}
                 </div>
                 <input type="file" ref={fileInputRef} style={{display:"none"}} onChange={handleImageSend} accept="image/*" />
               </div>
             </>
-          ) : <div className="noConversationState">
+          ) : (
+            /* ESTADO VACÍO (SOLO PC) */
+            <div className="noConversationState">
                 <span style={{fontSize:"50px"}}>✉️</span>
                 <span className="noConversationText">Tus mensajes</span>
-                <span style={{color:"#777"}}>Envía fotos y mensajes privados a tus amigos.</span>
-              </div>}
+                <button className="send-msg-btn">Envía mensajes privados a tus amigos</button>
+            </div>
+          )}
         </div>
       </div>
     </div>
