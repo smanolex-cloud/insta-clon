@@ -4,33 +4,70 @@
   align-items: center;
   height: 100vh;
   background-color: #fafafa;
+  font-family: sans-serif;
 }
+
 .login-box {
-  width: 300px;
-  padding: 20px;
+  width: 350px;
+  padding: 40px;
   background-color: white;
   border: 1px solid #dbdbdb;
   text-align: center;
+  border-radius: 1px; /* Estilo cuadrado típico */
 }
+
 .logo {
   font-family: sans-serif;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  font-size: 32px;
 }
+
 .input-field {
   width: 100%;
-  padding: 9px;
+  padding: 10px;
   margin-bottom: 10px;
   border: 1px solid #dbdbdb;
   border-radius: 3px;
+  background-color: #fafafa;
   box-sizing: border-box;
+  font-size: 14px;
 }
+
 .login-btn {
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   background-color: #0095f6;
   color: white;
   border: none;
   border-radius: 5px;
   font-weight: bold;
   cursor: pointer;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.login-btn:hover {
+  background-color: #0085e0;
+}
+
+/* ESTILOS NUEVOS PARA EL LINK DE REGISTRO */
+.login-separator {
+  margin-top: 20px;
+  font-size: 14px;
+  border-top: 1px solid #dbdbdb;
+  padding-top: 20px;
+}
+
+.register-redirect-btn {
+  background: none;
+  border: none;
+  color: #0095f6;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 5px;
+  font-size: 14px;
+}
+
+.register-redirect-btn:hover {
+  text-decoration: underline;
 }

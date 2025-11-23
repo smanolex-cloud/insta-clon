@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./Login.css";
 
+// URL DE PRODUCCIÓN
+const API_URL = "https://insta-clon-api.onrender.com/api";
+
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -9,20 +12,13 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // 1. Enviamos los datos al servidor
-      const res = await axios.post("https://insta-clon-api.onrender.com/api/auth/login", {
+      const res = await axios.post(`${API_URL}/auth/login`, {
         email,
         password,
       });
       
-      // 2. Mensaje de éxito
-      alert("¡Bienvenido de nuevo! 🔓");
-      console.log(res.data);
-      
-      // 3. Guardamos al usuario en la memoria del navegador
+      // Guardamos usuario y recargamos
       localStorage.setItem("user", JSON.stringify(res.data));
-
-      // 4. ¡IMPORTANTE! Recargamos la página para que App.js detecte el usuario y te mande al Home
       window.location.reload();
       
     } catch (err) {
@@ -35,6 +31,7 @@ export default function Login() {
     <div className="login-container">
       <div className="login-box">
         <h1 className="logo">InstaClon</h1>
+        
         <form onSubmit={handleSubmit}>
           <input
             type="email"
@@ -50,6 +47,18 @@ export default function Login() {
           />
           <button type="submit" className="login-btn">Iniciar Sesión</button>
         </form>
+
+        {/* --- AQUÍ ESTÁ EL NUEVO BOTÓN DE REGISTRO --- */}
+        <div className="login-separator">
+          <span>¿No tienes una cuenta?</span>
+          <button 
+            className="register-redirect-btn" 
+            onClick={() => window.location.href = "/register"}
+          >
+            Regístrate
+          </button>
+        </div>
+
       </div>
     </div>
   );
